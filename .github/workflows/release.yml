@@ -97,6 +97,7 @@ jobs:
       - name: Publish immutable tag artifacts
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           if gh release view "$RELEASE_TAG" --json tagName >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release/* --clobber
