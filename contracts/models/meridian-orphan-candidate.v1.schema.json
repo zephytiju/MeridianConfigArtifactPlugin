@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.dev/contracts/config-artifact/meridian-orphan-candidate.v1.schema.json",
+  "title": "Meridian Orphan Candidate V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion", "candidateId", "resourceId", "objectRef", "digest",
+    "byteLength", "reason", "discoveredAt", "state"
+  ],
+  "properties": {
+    "formatVersion": {"const": "meridian.config-artifact.orphan-candidate.v1"},
+    "candidateId": {"type": "string", "pattern": "^oc_[0-9a-f]{32}$"},
+    "resourceId": {"type": "string", "pattern": "^rs_[0-9a-f]{32}$"},
+    "objectRef": {"type": "object"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "byteLength": {"type": "integer", "minimum": 0},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 512},
+    "discoveredAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["DISCOVERED", "RECORDED", "RESOLVED"]}
+  }
+}

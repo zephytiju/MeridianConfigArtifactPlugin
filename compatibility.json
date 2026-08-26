@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "formatVersion": "meridian.plugin.compatibility.v1",
+  "distribution": "meridian-plugin-config-artifact",
+  "version": "1.0.0",
+  "python": ">=3.12,<3.15",
+  "coreContract": "1.x",
+  "pluginContract": "1.0.0",
+  "lockedDesign": {
+    "hldRevision": 56,
+    "catalogsPublicInterfacesRevision": 70,
+    "engineAdaptersRevision": 24,
+    "kafkaStreamingLldRevision": 6,
+    "meridianConstructsRevision": 45,
+    "configArtifactLldRevision": 24
+  },
+  "releasedDependencies": {
+    "meridian-storage-core": "1.0.0",
+    "meridian-storage-object-common": "1.0.0",
+    "meridian-storage-query": "1.0.0",
+    "meridian-storage-semantics": "1.0.0"
+  },
+  "optionalConformance": {
+    "meridian-storage-s3": "1.0.0",
+    "meridian-storage-oci": "1.0.0"
+  },
+  "catalogsConsumed": ["object", "structured"],
+  "catalogsDefined": [],
+  "excluded": [
+    "Adapter and Engine concepts",
+    "NativeQuery",
+    "provider SDK imports",
+    "bootstrap configuration",
+    "service endpoints",
+    "physical locators"
+  ]
+}

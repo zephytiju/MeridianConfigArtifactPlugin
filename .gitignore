@@ -1,4 +1,6 @@
 .coverage
+.DS_Store
+.hypothesis/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -6,5 +8,5 @@
 __pycache__/
 build/
 dist/
+.artifacts/
 *.egg-info/
-
