@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.dev/contracts/config-artifact/meridian-provenance.v1.schema.json",
+  "title": "Meridian Provenance V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion", "producer", "producerVersion", "sourceDigests",
+    "buildId", "validationVersion", "attributes"
+  ],
+  "properties": {
+    "formatVersion": {"const": "meridian.config-artifact.provenance.v1"},
+    "producer": {"type": "string", "minLength": 1, "maxLength": 256},
+    "producerVersion": {"type": "string", "minLength": 1, "maxLength": 128},
+    "sourceDigests": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": {"minLength": 1, "maxLength": 128},
+      "additionalProperties": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+    },
+    "buildId": {"type": ["string", "null"], "maxLength": 256},
+    "validationVersion": {"type": ["string", "null"], "maxLength": 256},
+    "attributes": {"type": "object", "maxProperties": 64}
+  }
+}

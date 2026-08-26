@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.dev/contracts/config-artifact/meridian-resource-channel.v1.schema.json",
+  "title": "Meridian Resource Channel V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion", "channelVersionId", "namespace", "kind", "name", "channel",
+    "targetResourceId", "pointerVersion", "actor", "updatedAt"
+  ],
+  "properties": {
+    "formatVersion": {"const": "meridian.config-artifact.resource-channel.v1"},
+    "channelVersionId": {"type": "string", "pattern": "^ch_[0-9a-f]{32}$"},
+    "namespace": {"type": "string"},
+    "kind": {"type": "string"},
+    "name": {"type": "string"},
+    "channel": {"type": "string", "minLength": 1, "maxLength": 128},
+    "targetResourceId": {"type": "string", "pattern": "^rs_[0-9a-f]{32}$"},
+    "pointerVersion": {"type": "integer", "minimum": 1},
+    "actor": {"type": "string", "minLength": 1, "maxLength": 512},
+    "updatedAt": {"type": "string", "format": "date-time"}
+  }
+}

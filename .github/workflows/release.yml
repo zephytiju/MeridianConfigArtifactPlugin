@@ -1,0 +1,128 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing immutable release tag to recover
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+  SOURCE_DATE_EPOCH: "1787702400"
+
+jobs:
+  build:
+    name: Build release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate release tag
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $RELEASE_TAG" >&2
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: python -m pip install --disable-pip-version-check '.[test]'
+      - name: Verify tag and source
+        run: |
+          test "$RELEASE_TAG" = "v$(python -c 'from meridian_storage.plugins.config_artifact import __version__; print(__version__)')"
+          ruff format --check src tests scripts
+          ruff check src tests scripts
+          mypy src
+          python scripts/verify_contracts.py
+          pytest
+          bandit -r src -c pyproject.toml
+      - name: Build and verify twice
+        run: |
+          python -m build --no-isolation --outdir .artifacts/first
+          python -m build --no-isolation --outdir .artifacts/second
+          twine check .artifacts/first/*
+          python scripts/verify_artifacts.py .artifacts/first
+          python scripts/compare_artifacts.py .artifacts/first .artifacts/second
+          mkdir release
+          cp .artifacts/first/* release/
+          python scripts/generate_sbom.py --output release/meridian-plugin-config-artifact-1.0.0.spdx.json .artifacts/first/*
+          cd release && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-distributions
+          path: release/
+          if-no-files-found: error
+
+  attest:
+    name: Attest release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-distributions
+          path: release
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: release/*
+
+  github-release:
+    name: Publish GitHub release
+    needs: [build, attest]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-distributions
+          path: release
+      - name: Publish immutable tag artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" --json tagName >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" release/* --clobber
+          else
+            gh release create "$RELEASE_TAG" release/* --verify-tag --generate-notes --title "$RELEASE_TAG"
+          fi
+
+  pypi:
+    name: Publish PyPI
+    if: ${{ vars.PYPI_TRUSTED_PUBLISHING_ENABLED == 'true' }}
+    needs: [build, attest]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/meridian-plugin-config-artifact/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-distributions
+          path: release
+      - name: Select distributions
+        run: |
+          mkdir publish
+          cp release/*.whl release/*.tar.gz publish/
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: publish/

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "formatVersion": "meridian.config-artifact.public-api.v1",
+  "distribution": "meridian-plugin-config-artifact",
+  "pluginId": "config-artifact",
+  "schemaProviderId": "meridian.plugin.config-artifact",
+  "profiles": ["configuration", "artifact"],
+  "resolutionModes": ["exact", "latest", "channel"],
+  "resourceStoreSurfaces": ["configurations", "artifacts", "publisher", "consumer"],
+  "configurationMethods": [
+    "publish",
+    "promote",
+    "exact",
+    "latest",
+    "channel",
+    "list_resources",
+    "deprecate"
+  ],
+  "artifactMethods": [
+    "publish",
+    "promote",
+    "exact",
+    "latest",
+    "channel",
+    "list_resources",
+    "stat",
+    "open",
+    "read",
+    "range_read",
+    "discover_orphans",
+    "deprecate"
+  ],
+  "catalogs": {
+    "structured": ["get", "patch", "put", "query"],
+    "object": ["get", "list", "put", "read_range", "stat"]
+  },
+  "publisherSurfaces": [
+    "ConfigurationPublisher",
+    "ArtifactPublisher",
+    "ResourcePublisher"
+  ],
+  "consumerSurfaces": [
+    "ConfigurationConsumer",
+    "ArtifactConsumer",
+    "ResourceConsumer"
+  ],
+  "invariants": [
+    "logical identities are immutable",
+    "configuration payloads are exact-Schema validated and stored inline",
+    "artifact bytes are immutable Objects and metadata is structured",
+    "channel promotion requires compare-and-set pointer versions",
+    "published resource deletion is forbidden",
+    "partial artifact publication produces orphan evidence"
+  ]
+}

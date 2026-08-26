@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.dev/contracts/config-artifact/meridian-stored-resource.v1.schema.json",
+  "title": "Meridian Stored Resource V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion", "resourceId", "namespace", "kind", "name", "version",
+    "profile", "state", "mediaType", "digest", "byteLength", "objectRef",
+    "payload", "payloadSchema", "labels", "annotations", "provenance",
+    "createdBy", "createdAt", "supersedes", "immutable", "versionOrder"
+  ],
+  "properties": {
+    "formatVersion": {"const": "meridian.config-artifact.stored-resource.v1"},
+    "resourceId": {"type": "string", "pattern": "^rs_[0-9a-f]{32}$"},
+    "namespace": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}$"},
+    "kind": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}$"},
+    "name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}$"},
+    "version": {"type": "string", "minLength": 1, "maxLength": 256},
+    "profile": {"enum": ["configuration", "artifact"]},
+    "state": {"enum": ["DRAFT", "PUBLISHED", "DEPRECATED"]},
+    "mediaType": {"type": "string", "minLength": 3, "maxLength": 255},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "byteLength": {"type": "integer", "minimum": 0},
+    "objectRef": {"type": ["object", "null"]},
+    "payload": {"type": ["object", "null"]},
+    "payloadSchema": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["catalog", "namespace", "name", "version"],
+          "properties": {
+            "catalog": {"const": "structured"},
+            "namespace": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}$"},
+            "name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}$"},
+            "version": {"type": "string", "minLength": 1, "maxLength": 128}
+          }
+        }
+      ]
+    },
+    "labels": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": {"maxLength": 128},
+      "additionalProperties": {"type": "string", "maxLength": 512}
+    },
+    "annotations": {"type": "object", "maxProperties": 64},
+    "provenance": {"type": ["object", "null"]},
+    "createdBy": {"type": "string", "minLength": 1, "maxLength": 512},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "supersedes": {"type": ["string", "null"], "maxLength": 256},
+    "immutable": {"type": "boolean"},
+    "versionOrder": {"type": ["integer", "null"], "minimum": 0}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"profile": {"const": "configuration"}}},
+      "then": {
+        "properties": {
+          "objectRef": {"type": "null"},
+          "payload": {"type": "object"},
+          "payloadSchema": {"type": "object"}
+        }
+      },
+      "else": {
+        "properties": {
+          "objectRef": {"type": "object"},
+          "payload": {"type": "null"},
+          "payloadSchema": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"state": {"const": "DRAFT"}}},
+      "then": {"properties": {"immutable": {"const": false}}},
+      "else": {"properties": {"immutable": {"const": true}}}
+    }
+  ]
+}

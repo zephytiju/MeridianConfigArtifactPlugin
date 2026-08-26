@@ -4,18 +4,102 @@ name: CI
 on:
   pull_request:
   push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  bootstrap:
-    name: Repository bootstrap
+  quality:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install exact test dependencies
+        run: python -m pip install --disable-pip-version-check '.[test]'
+      - name: Check source and contracts
+        run: |
+          ruff format --check src tests scripts
+          ruff check src tests scripts
+          mypy src
+          python scripts/verify_contracts.py
+      - name: Run conformance suite
+        run: pytest --cov-report=xml
+
+  security:
+    name: Security
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Verify public repository baseline
-        run: test -f LICENSE && test -f NOTICE && test -f README.md
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: python -m pip install --disable-pip-version-check '.[test]'
+      - run: bandit -r src -c pyproject.toml
+      - run: pip-audit --skip-editable
+
+  package:
+    name: Reproducible package
+    needs: [quality, security]
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_DATE_EPOCH: "1787702400"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: python -m pip install --disable-pip-version-check '.[test]'
+      - name: Build twice
+        run: |
+          python -m build --no-isolation --outdir .artifacts/first
+          python -m build --no-isolation --outdir .artifacts/second
+      - name: Verify distributions and generate SBOM
+        run: |
+          twine check .artifacts/first/*
+          python scripts/verify_artifacts.py .artifacts/first
+          python scripts/compare_artifacts.py .artifacts/first .artifacts/second
+          python scripts/generate_sbom.py --output .artifacts/meridian-plugin-config-artifact-1.0.0.spdx.json .artifacts/first/*
+          cd .artifacts/first && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
+      - name: Clean-install wheel with released predecessors
+        run: |
+          python -m venv .artifacts/venv
+          WHEEL_PATH=$(find .artifacts/first -name '*.whl' -type f -print -quit)
+          .artifacts/venv/bin/python -m pip install --disable-pip-version-check "$WHEEL_PATH"
+          cd /tmp
+          "$GITHUB_WORKSPACE/.artifacts/venv/bin/python" -I -c 'from importlib.metadata import entry_points; plugins={x.name:x for x in entry_points(group="meridian_storage.plugins")}; schemas={x.name:x for x in entry_points(group="meridian_storage.schemas")}; assert plugins["config-artifact"].load()().plugin_id == "config-artifact"; assert schemas["config-artifact"].load()().provider_id == "meridian.plugin.config-artifact"'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: meridian-plugin-config-artifact-${{ github.sha }}
+          path: |
+            .artifacts/first/*
+            .artifacts/meridian-plugin-config-artifact-*.spdx.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
