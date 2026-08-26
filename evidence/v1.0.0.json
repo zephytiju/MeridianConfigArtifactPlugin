@@ -37,7 +37,7 @@
   "artifacts": {
     "meridian_plugin_config_artifact-1.0.0-py3-none-any.whl": "sha256:282d6fcfac5ed6ae643ebeb6b550b46101fad5455ac1f709a3a70a6ad524f0ab",
     "meridian_plugin_config_artifact-1.0.0.tar.gz": "sha256:4192c7a582f865e64bde96bb9452e5cc9c1c048c61da0db1564d17914fdeaac5",
-    "meridian-plugin-config-artifact-1.0.0.spdx.json": "sha256:4a093264aa96d151df349faaf05541b39e599da525fa9ba41e42eddc7028964c"
+    "meridian-plugin-config-artifact-1.0.0.spdx.json": "sha256:d89c976317c106b35483b98eb112652f7be1260ae55e094a87ab83f8816ca4cf"
   },
   "status": "passed"
 }

@@ -87,6 +87,13 @@ jobs:
           python scripts/compare_artifacts.py .artifacts/first .artifacts/second
           python scripts/generate_sbom.py --output .artifacts/meridian-plugin-config-artifact-1.0.0.spdx.json .artifacts/first/*
           cd .artifacts/first && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
+      - name: Verify published v1.0.0 evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir .artifacts/released
+          gh release download v1.0.0 --dir .artifacts/released
+          python scripts/verify_release_evidence.py evidence/v1.0.0.json .artifacts/released
       - name: Clean-install wheel with released predecessors
         run: |
           python -m venv .artifacts/venv
