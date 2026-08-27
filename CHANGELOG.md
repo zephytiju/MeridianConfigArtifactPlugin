@@ -14,4 +14,4 @@ This project uses semantic versioning.
 - Digest verification, idempotent retry, deprecation, and orphan reconciliation.
 - Language-neutral contracts, released-package conformance, CI, and reproducible artifacts.
 
-[1.0.0]: https://github.com/zephytiju/meridian-plugin-config-artifact/releases/tag/v1.0.0
+[1.0.0]: https://github.com/zephytiju/MeridianConfigArtifactPlugin/releases/tag/v1.0.0

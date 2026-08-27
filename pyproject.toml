@@ -50,9 +50,9 @@ test = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/zephytiju/meridian-plugin-config-artifact#readme"
-Issues = "https://github.com/zephytiju/meridian-plugin-config-artifact/issues"
-Repository = "https://github.com/zephytiju/meridian-plugin-config-artifact"
+Documentation = "https://github.com/zephytiju/MeridianConfigArtifactPlugin#readme"
+Issues = "https://github.com/zephytiju/MeridianConfigArtifactPlugin/issues"
+Repository = "https://github.com/zephytiju/MeridianConfigArtifactPlugin"
 
 [project.entry-points."meridian_storage.plugins"]
 config-artifact = "meridian_storage.plugins.config_artifact.plugin:ConfigArtifactPluginFactory"
