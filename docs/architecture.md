@@ -66,8 +66,8 @@ publication fields agree.
 
 ## Locked baseline
 
-The 1.0.1 package targets HLD revision 56, Catalogs/Public Interfaces revision 70, Engine Adapters
+The 1.0.2 package targets HLD revision 56, Catalogs/Public Interfaces revision 70, Engine Adapters
 revision 24, Kafka Streaming LLD revision 6, MeridianConstructs revision 45, and Configuration and
-Artifact LLD revision 25. The plugin and schema contracts remain at 1.0.0.
+Artifact LLD revision 28. The plugin and schema contracts remain at 1.0.0.
 Query/projection/telemetry/audit/lineage/usage/cost remain capabilities or data, not Catalogs;
 NativeQuery is outside V1.

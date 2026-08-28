@@ -352,8 +352,8 @@ class ConfigArtifactSchemaProvider:
             extensions={
                 "design.hldRevision": 56,
                 "design.catalogRevision": 70,
-                "design.configArtifactLldRevision": 25,
-                "distribution": "meridian-storage-plugin-config-artifact",
+                "design.configArtifactLldRevision": 28,
+                "distribution": "meridian-plugin-config-artifact",
                 "catalogs": ["object", "structured"],
             },
         )

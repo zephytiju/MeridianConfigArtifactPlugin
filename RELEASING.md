@@ -7,13 +7,11 @@
    contents, emits SHA-256 sums and an SPDX 2.3 SBOM, attests provenance, and creates the GitHub
    release.
 4. PyPI publication runs only when repository variable `PYPI_TRUSTED_PUBLISHING_ENABLED` is
-   `true`. For the first release, the package owner must create or reserve the PyPI project and
-   configure its trusted publisher for the `pypi` GitHub environment. Do not use or bypass MFA
-   credentials. After that one-time gate, CI owns publication.
+   `true`, through the configured trusted publisher for the `pypi` GitHub environment.
 
-The canonical PyPI project is `meridian-storage-plugin-config-artifact`. The legacy
-`meridian-plugin-config-artifact` 1.0.0 project and release are immutable and must not receive
-subsequent versions.
+The approved PyPI project is the existing `meridian-plugin-config-artifact` distribution. CI is
+the only publication path. Never upload distributions manually, introduce an API token fallback,
+or bypass the trusted-publishing workflow.
 
 Recovery is idempotent: dispatch the release workflow for an existing release tag. Git tags and
 published package versions are never replaced.

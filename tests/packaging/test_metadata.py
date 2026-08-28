@@ -12,9 +12,9 @@ from packaging.specifiers import SpecifierSet
 
 @pytest.mark.packaging
 def test_distribution_metadata_and_license_material() -> None:
-    name = "meridian-storage-plugin-config-artifact"
+    name = "meridian-plugin-config-artifact"
     project = metadata(name)
-    assert version(name) == "1.0.1"
+    assert version(name) == "1.0.2"
     assert project["License-Expression"] == "Apache-2.0"
     assert SpecifierSet(project["Requires-Python"]) == SpecifierSet(">=3.12,<3.15")
     requirements = project.get_all("Requires-Dist") or []

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "formatVersion": "meridian.config-artifact.public-api.v1",
-  "distribution": "meridian-storage-plugin-config-artifact",
+  "distribution": "meridian-plugin-config-artifact",
   "pluginId": "config-artifact",
   "schemaProviderId": "meridian.plugin.config-artifact",
   "entryPoints": {

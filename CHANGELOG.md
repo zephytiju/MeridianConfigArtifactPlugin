@@ -3,6 +3,17 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project uses semantic versioning.
 
+## [1.0.2] - 2026-08-28
+
+### Changed
+
+- Continue the existing `meridian-plugin-config-artifact` PyPI distribution identity approved by
+  Configuration and Artifact LLD revision 28 while preserving the
+  `meridian_storage.plugins.config_artifact` import package and V1 public API.
+- Require the configured trusted-publishing workflow as the only PyPI publication path.
+- Preserve the immutable GitHub-only `v1.0.1` evidence and verify both predecessor releases before
+  producing the corrected distribution.
+
 ## [1.0.1] - 2026-08-28
 
 ### Changed
@@ -14,8 +25,8 @@ This project uses semantic versioning.
 - Verify both discovery entry points plus deterministic Configuration, Artifact, reference, and
   schema-migration lifecycles locally.
 
-The legacy `meridian-plugin-config-artifact` 1.0.0 release remains immutable and is not a supported
-installation name for this release line.
+The existing `meridian-plugin-config-artifact` 1.0.0 release remained immutable and did not receive
+version 1.0.1.
 
 ## [1.0.0] - 2026-08-26
 
@@ -30,3 +41,4 @@ installation name for this release line.
 
 [1.0.0]: https://github.com/zephytiju/MeridianConfigArtifactPlugin/releases/tag/v1.0.0
 [1.0.1]: https://github.com/zephytiju/MeridianConfigArtifactPlugin/releases/tag/v1.0.1
+[1.0.2]: https://github.com/zephytiju/MeridianConfigArtifactPlugin/releases/tag/v1.0.2
