@@ -1,8 +1,8 @@
 # Meridian Configuration and Artifact Plugin
 
-`meridian-plugin-config-artifact` is the Apache-2.0 licensed Meridian V1 library for publishing
-and consuming versioned configuration and built runtime artifacts. It is an embeddable plugin,
-never a service or a Catalog.
+`meridian-storage-plugin-config-artifact` is the Apache-2.0 licensed Meridian V1 library for
+publishing and consuming versioned configuration and built runtime artifacts. It is an embeddable
+plugin, never a service or a Catalog.
 
 Configuration payloads remain queryable and mutable through structured database semantics until
 publication. A published version stores its validated JSON inline and is immutable. Artifact bytes
@@ -12,12 +12,12 @@ channel pointers are structured records.
 ## Install
 
 ```console
-python -m pip install meridian-plugin-config-artifact
+python -m pip install meridian-storage-plugin-config-artifact
 ```
 
 Python 3.12–3.14 and the exact Meridian 1.0.0 Core, Semantics, Query, and Object Common releases
-are supported. Add `meridian-plugin-config-artifact[s3]` or `[oci]` only to co-install a released
-provider; this library never imports either provider or its SDK.
+are supported. Add `meridian-storage-plugin-config-artifact[s3]` or `[oci]` only to co-install a
+released provider; this library never imports either provider or its SDK.
 
 ## Compose
 

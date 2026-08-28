@@ -33,6 +33,19 @@ def test_packaged_contracts_are_valid_json_schemas() -> None:
         document = json.loads(path.read_text(encoding="utf-8"))
         jsonschema.Draft202012Validator.check_schema(document)
     api = public_api_contract()
+    assert api["distribution"] == "meridian-storage-plugin-config-artifact"
+    assert api["entryPoints"] == {
+        "meridian_storage.plugins": {
+            "config-artifact": (
+                "meridian_storage.plugins.config_artifact.plugin:ConfigArtifactPluginFactory"
+            )
+        },
+        "meridian_storage.schemas": {
+            "config-artifact": (
+                "meridian_storage.plugins.config_artifact.schemas:ConfigArtifactSchemaProvider"
+            )
+        },
+    }
     assert api["catalogs"] == {
         "structured": ["get", "patch", "put", "query"],
         "object": ["get", "list", "put", "read_range", "stat"],
@@ -76,6 +89,9 @@ def test_resource_wire_record_validates_against_language_neutral_contract() -> N
 @pytest.mark.contract
 def test_contracts_and_compatibility_are_packaged() -> None:
     compatibility = compatibility_document()
+    assert compatibility["distribution"] == "meridian-storage-plugin-config-artifact"
+    assert compatibility["version"] == "1.0.1"
+    assert compatibility["lockedDesign"]["configArtifactLldRevision"] == 25
     assert compatibility["releasedDependencies"] == {
         "meridian-storage-core": "1.0.0",
         "meridian-storage-object-common": "1.0.0",

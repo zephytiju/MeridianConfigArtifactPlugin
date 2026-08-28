@@ -44,6 +44,11 @@ def test_schema_bundle_is_complete_and_valid() -> None:
     }
     assert GUARANTEE_CONDITIONAL_CREATE in guarantees
     assert GUARANTEE_DIGEST_VERIFICATION in guarantees
+    replay = ConfigArtifactSchemaProvider().load()
+    assert replay.to_dict() == bundle.to_dict()
+    assert replay.fingerprint == bundle.fingerprint
+    assert bundle.extensions["distribution"] == "meridian-storage-plugin-config-artifact"
+    assert bundle.extensions["design.configArtifactLldRevision"] == 25
 
 
 def test_plugin_manifest_is_locked_and_provider_neutral() -> None:
@@ -54,3 +59,5 @@ def test_plugin_manifest_is_locked_and_provider_neutral() -> None:
     assert manifest.core_contract == "1.x"
     assert manifest.extensions["catalogs"] == "structured,object"
     assert manifest.extensions["design.hldRevision"] == "56"
+    assert manifest.extensions["design.configArtifactLldRevision"] == "25"
+    assert manifest.extensions["distribution"] == "meridian-storage-plugin-config-artifact"

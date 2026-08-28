@@ -37,6 +37,8 @@ EXPECTED_PINS = {
     "meridian-storage-query": "==1.0.0",
     "meridian-storage-semantics": "==1.0.0",
 }
+DISTRIBUTION = "meridian-storage-plugin-config-artifact"
+VERSION = "1.0.1"
 FORBIDDEN_IMPORTS = (
     "boto",
     "botocore",
@@ -59,7 +61,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _distribution_pins() -> dict[str, str]:
-    distribution = metadata.distribution("meridian-plugin-config-artifact")
+    distribution = metadata.distribution(DISTRIBUTION)
     result: dict[str, str] = {}
     for raw in distribution.requires or ():
         requirement = Requirement(raw)
@@ -102,8 +104,8 @@ def main() -> None:
     for path in model_paths:
         Draft202012Validator.check_schema(_load_json(path))
 
-    _require(project["name"] == "meridian-plugin-config-artifact", "name differs")
-    _require(project["version"] == __version__ == "1.0.0", "version differs")
+    _require(project["name"] == DISTRIBUTION, "name differs")
+    _require(project["version"] == __version__ == VERSION, "version differs")
     _require(project["license"] == "Apache-2.0", "license differs")
     _require(compatibility["catalogsDefined"] == [], "plugin must define no Catalog")
     _require(
@@ -126,6 +128,15 @@ def main() -> None:
     _require(isinstance(PublicationReceipt.ref, property), "publication ref property is absent")
     bundle = ConfigArtifactSchemaProvider().load()
     _require(bundle.provider_id == public["schemaProviderId"], "schema provider differs")
+    _require(manifest.extensions["distribution"] == DISTRIBUTION, "manifest name differs")
+    _require(bundle.extensions["distribution"] == DISTRIBUTION, "schema bundle name differs")
+    _require(public["distribution"] == DISTRIBUTION, "public contract name differs")
+    _require(compatibility["distribution"] == DISTRIBUTION, "compatibility name differs")
+    _require(compatibility["version"] == VERSION, "compatibility version differs")
+    _require(
+        compatibility["lockedDesign"]["configArtifactLldRevision"] == 25,
+        "locked LLD revision differs",
+    )
     _require(len(bundle.resources) == 5 and len(bundle.schemas) == 4, "bundle differs")
     _require(
         {resource.ref.catalog for resource in bundle.resources} == {"object", "structured"},
