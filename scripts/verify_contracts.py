@@ -37,8 +37,8 @@ EXPECTED_PINS = {
     "meridian-storage-query": "==1.0.0",
     "meridian-storage-semantics": "==1.0.0",
 }
-DISTRIBUTION = "meridian-storage-plugin-config-artifact"
-VERSION = "1.0.1"
+DISTRIBUTION = "meridian-plugin-config-artifact"
+VERSION = "1.0.2"
 FORBIDDEN_IMPORTS = (
     "boto",
     "botocore",
@@ -134,7 +134,7 @@ def main() -> None:
     _require(compatibility["distribution"] == DISTRIBUTION, "compatibility name differs")
     _require(compatibility["version"] == VERSION, "compatibility version differs")
     _require(
-        compatibility["lockedDesign"]["configArtifactLldRevision"] == 25,
+        compatibility["lockedDesign"]["configArtifactLldRevision"] == 28,
         "locked LLD revision differs",
     )
     _require(len(bundle.resources) == 5 and len(bundle.schemas) == 4, "bundle differs")

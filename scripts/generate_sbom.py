@@ -11,8 +11,8 @@ import os
 from datetime import UTC, datetime
 from pathlib import Path
 
-NAME = "meridian-storage-plugin-config-artifact"
-VERSION = "1.0.1"
+NAME = "meridian-plugin-config-artifact"
+VERSION = "1.0.2"
 
 
 def sha256(path: Path) -> str:
