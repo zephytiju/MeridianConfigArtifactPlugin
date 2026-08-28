@@ -1,0 +1,43 @@
+{
+  "formatVersion": "meridian.config-artifact.release-evidence.v1",
+  "package": "meridian-storage-plugin-config-artifact",
+  "version": "1.0.1",
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "sourceDateEpoch": 1787875200,
+  "lockedDesign": {
+    "hldRevision": 56,
+    "catalogsPublicInterfacesRevision": 70,
+    "engineAdaptersRevision": 24,
+    "kafkaStreamingLldRevision": 6,
+    "meridianConstructsRevision": 45,
+    "configArtifactLldRevision": 25
+  },
+  "predecessors": {
+    "meridian-storage-core": "1.0.0",
+    "meridian-storage-semantics": "1.0.0",
+    "meridian-storage-query": "1.0.0",
+    "meridian-storage-object-common": "1.0.0",
+    "meridian-storage-s3": "1.0.0",
+    "meridian-storage-oci": "1.0.0"
+  },
+  "verification": {
+    "tests": 49,
+    "coveragePercent": 91.98,
+    "ruff": "passed",
+    "mypyStrict": "passed",
+    "contracts": "passed",
+    "banditPython313": "passed-no-files-skipped",
+    "pipAudit": "no-known-vulnerabilities",
+    "twine": "passed",
+    "cleanWheelInstallPython313": "passed",
+    "reproducibleBuild": true,
+    "conformanceFingerprint": "sha256:008d538bdf2187943972a983465434db8baa0dd2187f944a173cf4adea35dcab",
+    "artifactFingerprint": "sha256:9581be192681a510c7d3fbbaeb3a3443527ea339a5ec3a794916d2c75de4b7f8"
+  },
+  "artifacts": {
+    "meridian_storage_plugin_config_artifact-1.0.1-py3-none-any.whl": "sha256:3495927c0403bacfbad607c8e2e35e501b4214e3a3a01cd9c554277dfd2d0a89",
+    "meridian_storage_plugin_config_artifact-1.0.1.tar.gz": "sha256:572d05011805c3b8ec633d0922b259ad4f0664244c17e207dcfb21bab85a0f6d",
+    "meridian-storage-plugin-config-artifact-1.0.1.spdx.json": "sha256:8cd4d8b8f6fc7123b9a51767df655d3128c9326bd282c66f06a8646998a25e11"
+  },
+  "status": "passed"
+}

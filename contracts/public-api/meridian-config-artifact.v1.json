@@ -1,9 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "formatVersion": "meridian.config-artifact.public-api.v1",
-  "distribution": "meridian-plugin-config-artifact",
+  "distribution": "meridian-storage-plugin-config-artifact",
   "pluginId": "config-artifact",
   "schemaProviderId": "meridian.plugin.config-artifact",
+  "entryPoints": {
+    "meridian_storage.plugins": {
+      "config-artifact": "meridian_storage.plugins.config_artifact.plugin:ConfigArtifactPluginFactory"
+    },
+    "meridian_storage.schemas": {
+      "config-artifact": "meridian_storage.plugins.config_artifact.schemas:ConfigArtifactSchemaProvider"
+    }
+  },
   "profiles": ["configuration", "artifact"],
   "resolutionModes": ["exact", "latest", "channel"],
   "resourceStoreSurfaces": ["configurations", "artifacts", "publisher", "consumer"],

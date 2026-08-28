@@ -7,6 +7,11 @@ Platform IaC must provision and bind the four structured Resources and one objec
 repositories, endpoints, or credentials to `ResourceStore`; it passes only logical `ResourceRef`
 values. All related Resources must resolve to transaction-compatible structured bindings.
 
+The `meridian_storage.schemas` entry point is the package's migration input. It returns a
+deterministic `ResourceBundle` containing the four versioned structured Schemas and all five
+logical Resource requirements. Platform-owned Meridian migration jobs apply that bundle; this
+package intentionally contains no database- or object-provider-specific migration runner.
+
 ## Payload registry
 
 Create one process-local registry and inject that same instance into both the Object Adapter factory

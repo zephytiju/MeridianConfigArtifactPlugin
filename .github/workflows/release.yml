@@ -16,7 +16,7 @@ permissions:
 
 env:
   RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
-  SOURCE_DATE_EPOCH: "1787702400"
+  SOURCE_DATE_EPOCH: "1787875200"
 
 jobs:
   build:
@@ -58,8 +58,10 @@ jobs:
           python scripts/compare_artifacts.py .artifacts/first .artifacts/second
           mkdir release
           cp .artifacts/first/* release/
-          python scripts/generate_sbom.py --output release/meridian-plugin-config-artifact-1.0.0.spdx.json .artifacts/first/*
-          cd release && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
+          python scripts/generate_sbom.py --output release/meridian-storage-plugin-config-artifact-1.0.1.spdx.json .artifacts/first/*
+          cd release && sha256sum meridian_storage_plugin_config_artifact-* > SHA256SUMS
+      - name: Verify immutable v1.0.1 evidence
+        run: python scripts/verify_release_evidence.py evidence/v1.0.1.json release
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-distributions
@@ -112,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/meridian-plugin-config-artifact/
+      url: https://pypi.org/project/meridian-storage-plugin-config-artifact/
     permissions:
       id-token: write
     steps:

@@ -11,8 +11,8 @@ import os
 from datetime import UTC, datetime
 from pathlib import Path
 
-NAME = "meridian-plugin-config-artifact"
-VERSION = "1.0.0"
+NAME = "meridian-storage-plugin-config-artifact"
+VERSION = "1.0.1"
 
 
 def sha256(path: Path) -> str:
@@ -64,7 +64,9 @@ def main() -> None:
             "creators": [f"Tool: {NAME}/generate_sbom.py-{VERSION}"],
         },
         "dataLicense": "CC0-1.0",
-        "documentNamespace": f"https://github.com/zephytiju/{NAME}/sbom/{namespace_digest}",
+        "documentNamespace": (
+            f"https://github.com/zephytiju/MeridianConfigArtifactPlugin/sbom/{namespace_digest}"
+        ),
         "files": files,
         "name": f"{NAME}-{VERSION}-release",
         "packages": [

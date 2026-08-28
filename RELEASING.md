@@ -11,5 +11,9 @@
    configure its trusted publisher for the `pypi` GitHub environment. Do not use or bypass MFA
    credentials. After that one-time gate, CI owns publication.
 
+The canonical PyPI project is `meridian-storage-plugin-config-artifact`. The legacy
+`meridian-plugin-config-artifact` 1.0.0 project and release are immutable and must not receive
+subsequent versions.
+
 Recovery is idempotent: dispatch the release workflow for an existing release tag. Git tags and
 published package versions are never replaced.

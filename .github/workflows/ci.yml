@@ -65,7 +65,7 @@ jobs:
     needs: [quality, security]
     runs-on: ubuntu-latest
     env:
-      SOURCE_DATE_EPOCH: "1787702400"
+      SOURCE_DATE_EPOCH: "1787875200"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -85,9 +85,13 @@ jobs:
           twine check .artifacts/first/*
           python scripts/verify_artifacts.py .artifacts/first
           python scripts/compare_artifacts.py .artifacts/first .artifacts/second
-          python scripts/generate_sbom.py --output .artifacts/meridian-plugin-config-artifact-1.0.0.spdx.json .artifacts/first/*
-          cd .artifacts/first && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
-      - name: Verify published v1.0.0 evidence
+          mkdir .artifacts/release
+          cp .artifacts/first/* .artifacts/release/
+          python scripts/generate_sbom.py --output .artifacts/release/meridian-storage-plugin-config-artifact-1.0.1.spdx.json .artifacts/first/*
+          cd .artifacts/release && sha256sum meridian_storage_plugin_config_artifact-* > SHA256SUMS
+      - name: Verify v1.0.1 release evidence
+        run: python scripts/verify_release_evidence.py evidence/v1.0.1.json .artifacts/release
+      - name: Verify immutable legacy v1.0.0 evidence
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -103,10 +107,8 @@ jobs:
           "$GITHUB_WORKSPACE/.artifacts/venv/bin/python" -I -c 'from importlib.metadata import entry_points; plugins={x.name:x for x in entry_points(group="meridian_storage.plugins")}; schemas={x.name:x for x in entry_points(group="meridian_storage.schemas")}; assert plugins["config-artifact"].load()().plugin_id == "config-artifact"; assert schemas["config-artifact"].load()().provider_id == "meridian.plugin.config-artifact"'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: meridian-plugin-config-artifact-${{ github.sha }}
-          path: |
-            .artifacts/first/*
-            .artifacts/meridian-plugin-config-artifact-*.spdx.json
+          name: meridian-storage-plugin-config-artifact-${{ github.sha }}
+          path: .artifacts/release/*
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 30
