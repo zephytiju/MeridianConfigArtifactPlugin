@@ -19,13 +19,13 @@ from packaging.specifiers import SpecifierSet
 
 EXPECTED_PINS = {
     "meridian-storage-core==1.0.0",
-    "meridian-storage-object-common==1.0.0",
+    "meridian-storage-object-common==1.0.1",
     "meridian-storage-query==1.0.0",
     "meridian-storage-semantics==1.0.0",
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
 NORMALIZED_DISTRIBUTION = "meridian_plugin_config_artifact"
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 
 
 def _require(condition: bool, message: str) -> None:

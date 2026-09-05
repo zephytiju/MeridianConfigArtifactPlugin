@@ -1,0 +1,49 @@
+{
+  "formatVersion": "meridian.config-artifact.release-evidence.v1",
+  "package": "meridian-plugin-config-artifact",
+  "version": "1.0.3",
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "sourceDateEpoch": 1787875200,
+  "lockedDesign": {
+    "hldRevision": 114,
+    "catalogsPublicInterfacesRevision": 121,
+    "engineAdaptersRevision": 24,
+    "kafkaStreamingLldRevision": 6,
+    "meridianConstructsRevision": 45,
+    "configArtifactLldRevision": 28
+  },
+  "predecessors": {
+    "meridian-storage-core": "1.0.0",
+    "meridian-storage-object-common": "1.0.1",
+    "meridian-storage-query": "1.0.0",
+    "meridian-storage-semantics": "1.0.0",
+    "meridian-storage-s3": "1.0.1",
+    "meridian-storage-oci": "1.0.1",
+    "meridian-storage-postgresql": "1.0.0"
+  },
+  "verification": {
+    "tests": 69,
+    "coveragePercent": 92.13,
+    "realPostgresqlS3Tests": 3,
+    "realWheelAcceptanceTests": 3,
+    "ruff": "passed",
+    "mypyStrict": "passed",
+    "contracts": "passed",
+    "banditPython312": "passed-no-files-skipped",
+    "pipAudit": "no-known-vulnerabilities",
+    "twine": "passed",
+    "cleanWheelInstallPython312": "passed",
+    "reproducibleBuild": true,
+    "conformanceFingerprint": "sha256:34b777449b83ae554f8fb50b728285fdcc80606cedcfe56419ae05c8263a5965",
+    "artifactFingerprint": "sha256:0371c96fa165c0c2fe9c8e432576ab6219fa854da3ec41dd9a3c5e8fdebf3a01"
+  },
+  "artifacts": {
+    "meridian-plugin-config-artifact-1.0.3.spdx.json": "sha256:c4842a5b2197b19aa597b95a4ed3752b6ab26144fb0cb13c1a50e1c3662a993d",
+    "meridian_plugin_config_artifact-1.0.3-py3-none-any.whl": "sha256:0bc0811f7b1f0da54b793b85354a23a8751fa049281c3c12cf5cf320acf473c7",
+    "meridian_plugin_config_artifact-1.0.3.tar.gz": "sha256:b88fb3370d240664ae999c703a7eddfc3e0f6a630b61300bd50f921aa323696e"
+  },
+  "status": "passed",
+  "limitations": [
+    "Real engine deployment uses only PostgreSQL and S3. OCI 1.0.1 retains direct-adapter conformance but its legacy binding-required entry point is incompatible with Core discovery."
+  ]
+}

@@ -33,12 +33,12 @@ from packaging.requirements import Requirement
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_PINS = {
     "meridian-storage-core": "==1.0.0",
-    "meridian-storage-object-common": "==1.0.0",
+    "meridian-storage-object-common": "==1.0.1",
     "meridian-storage-query": "==1.0.0",
     "meridian-storage-semantics": "==1.0.0",
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 FORBIDDEN_IMPORTS = (
     "boto",
     "botocore",
@@ -149,7 +149,10 @@ def main() -> None:
         "meridian-storage-query": query_version,
         "meridian-storage-semantics": semantics_version,
     }
-    _require(set(versions.values()) == {"1.0.0"}, "released Meridian versions differ")
+    _require(
+        versions == {name: pin.removeprefix("==") for name, pin in EXPECTED_PINS.items()},
+        "released Meridian versions differ",
+    )
     _require(
         compatibility["releasedDependencies"] == versions,
         "compatibility ledger versions differ",

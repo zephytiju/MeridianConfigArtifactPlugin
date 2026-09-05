@@ -15,33 +15,35 @@ channel pointers are structured records.
 python -m pip install meridian-plugin-config-artifact
 ```
 
-Python 3.12–3.14 and the exact Meridian 1.0.0 Core, Semantics, Query, and Object Common releases
+Python 3.12–3.14, Core/Semantics/Query 1.0.0, and Object Common 1.0.1
 are supported. Add `meridian-plugin-config-artifact[s3]` or `[oci]` only to co-install a
 released provider; this library never imports either provider or its SDK.
 
 ## Compose
 
-The Artifact publisher and Object Adapter must share the same process-local payload registry. Use
-the package registry before constructing the runtime:
+Artifact bytes use Object Common's shared process-local default registry. Install the
+`s3` extra and start Meridian through installed-component discovery using deployment-owned
+bindings and migrations:
 
 ```python
-from meridian_storage.adapters.s3 import S3AdapterFactory
-from meridian_storage.plugins.config_artifact import (
-    ResourceStore,
-    default_payload_registry,
-)
+from meridian_storage import Meridian
+from meridian_storage.plugins.config_artifact import ResourceStore
 
-payloads = default_payload_registry()
-adapter_factory = S3AdapterFactory(payloads=payloads)
-
-# Construct and start Meridian with Platform-IaC-rendered bindings, the released
-# structured/object Catalog providers, ConfigArtifactSchemaProvider, and adapter_factory.
-store = ResourceStore(meridian, payload_registry=payloads)
+meridian = Meridian.from_environment()
+meridian.start()
+store = ResourceStore(meridian)
 ```
 
-`default_payload_registry()` is deliberately truthy even while empty so released V1 Adapter
-factory constructors preserve the injected object. Applications may instead inject their own
-already-shared `PayloadRegistry`.
+Core rejects duplicate component registration. Do not also inject an `S3AdapterFactory`
+when the installed `s3` entry point is present. `default_payload_registry()` remains the
+ResourceStore accessor and now returns Object Common's default. Passing this registry
+explicitly to ResourceStore is also supported. Custom SPI compositions may share an
+explicit `PayloadRegistry` with `S3AdapterFactory(payloads=registry)`; S3 1.0.1 preserves
+that exact object even when it is empty.
+
+The target combination is Core/Semantics/Query/PostgreSQL 1.0.0, Object Common/S3
+1.0.1, and ResourceStore 1.0.3. OCI 1.0.1 retains the existing optional conformance set.
+Regenerate deployment manifest fingerprints after upgrading package versions.
 
 The schema entry point contributes these logical Resources by default:
 

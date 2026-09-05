@@ -8,6 +8,7 @@ from datetime import datetime
 
 from meridian_storage import ResourceRef
 from meridian_storage.object_common import PayloadRegistry
+from meridian_storage.object_common import default_payload_registry as object_payload_registry
 
 from ._runtime import MeridianRuntime
 from .artifact import ArtifactConsumer, ArtifactPublisher, ArtifactRepository
@@ -37,13 +38,10 @@ class SharedPayloadRegistry(PayloadRegistry):
         return True
 
 
-_DEFAULT_PAYLOADS = SharedPayloadRegistry()
-
-
 def default_payload_registry() -> PayloadRegistry:
     """Return the process-wide registry applications may share with Object Adapters."""
 
-    return _DEFAULT_PAYLOADS
+    return object_payload_registry()
 
 
 class ResourceStore:
