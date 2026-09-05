@@ -6,6 +6,7 @@ from dataclasses import replace
 
 import pytest
 
+from meridian_storage import ResourceRef
 from meridian_storage.object_common import ConditionalConflict
 from meridian_storage.plugins.config_artifact import (
     IdentityConflict,
@@ -13,6 +14,36 @@ from meridian_storage.plugins.config_artifact import (
     InvalidRepositoryResult,
     ResourceNotFound,
 )
+
+
+@pytest.mark.parametrize("method", ["get_resource", "get_orphan"])
+@pytest.mark.parametrize("required", [False, True])
+def test_null_get_result_means_missing(store, runtime, monkeypatch, method, required):
+    def missing(expression):
+        return runtime._result(
+            expression, ResourceRef.parse(expression.arguments["resource"]), None
+        )
+
+    monkeypatch.setattr(runtime, "execute", missing)
+    get = getattr(store.metadata, method)
+    if required:
+        with pytest.raises(ResourceNotFound):
+            get("missing", required=True)
+    else:
+        assert get("missing", required=False) is None
+
+
+@pytest.mark.parametrize("method", ["get_resource", "get_orphan"])
+@pytest.mark.parametrize("data", [False, 0, "", [], {}, {"values": None}])
+def test_optional_get_rejects_malformed_non_null_result(store, runtime, monkeypatch, method, data):
+    def malformed(expression):
+        return runtime._result(
+            expression, ResourceRef.parse(expression.arguments["resource"]), data
+        )
+
+    monkeypatch.setattr(runtime, "execute", malformed)
+    with pytest.raises(InvalidRepositoryResult):
+        getattr(store.metadata, method)("missing", required=False)
 
 
 def test_orphan_writes_are_idempotent_and_conflicts_are_detected(
@@ -107,3 +138,23 @@ def test_provenance_write_detects_changed_immutable_fields(store, runtime, monke
                 "createdAt": "2026-01-02T03:04:05.123456Z",
             }
         )
+
+
+@pytest.mark.parametrize("timestamp", ["2026-01-02T03:04:05.123456Z", "bad", None, 42])
+def test_resource_result_structured_update_timestamp(store, timestamp):
+    resource = store.artifacts.publish(
+        namespace="ns",
+        kind="bundle",
+        name="timestamp",
+        version="1",
+        payload=b"content",
+        actor="publisher",
+    ).resource
+    record = {**resource.to_record(), "updatedAt": timestamp}
+    if timestamp == "2026-01-02T03:04:05.123456Z":
+        assert store.metadata._parse_resource(record) == resource
+    else:
+        with pytest.raises(InvalidRepositoryResult):
+            store.metadata._parse_resource(record)
+    with pytest.raises(InvalidRepositoryResult):
+        store.metadata._parse_resource({**resource.to_record(), "unknown": "field"})

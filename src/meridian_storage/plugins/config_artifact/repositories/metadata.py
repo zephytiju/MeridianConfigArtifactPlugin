@@ -10,6 +10,7 @@ from typing import cast
 from meridian_storage import ErrorCategory, MeridianError, OperationResult, ResourceRef, SafeCause
 from meridian_storage.semantics import JsonValue, StructuredCatalogSurface
 
+from .._canonical import utc_timestamp
 from .._runtime import MeridianRuntime
 from ..errors import IdentityConflict, InvalidRepositoryResult, ResourceNotFound, safe_cause
 from ..models import (
@@ -103,6 +104,10 @@ class MetadataRepository:
             if _is_not_found(exc):
                 raise ResourceNotFound(resource_ref=resource_id) from exc
             raise
+        if result.data is None:
+            if not required:
+                return None
+            raise ResourceNotFound(resource_ref=resource_id)
         return self._parse_resource(_record(result, "structured resource result"))
 
     def put_resource(self, resource: StoredResourceV1) -> StoredResourceV1:
@@ -275,6 +280,10 @@ class MetadataRepository:
             if _is_not_found(exc):
                 raise ResourceNotFound(resource_ref=candidate_id) from exc
             raise
+        if result.data is None:
+            if not required:
+                return None
+            raise ResourceNotFound(resource_ref=candidate_id)
         return self._parse_orphan(_record(result, "structured orphan result"))
 
     def list_orphans(
@@ -308,6 +317,11 @@ class MetadataRepository:
     @staticmethod
     def _parse_resource(value: Mapping[str, object]) -> StoredResourceV1:
         try:
+            # PostgreSQL returns the structured record's update timestamp alongside
+            # logical values. It is not a field of immutable StoredResourceV1.
+            if "updatedAt" in value:
+                utc_timestamp(cast(str, value["updatedAt"]))
+                value = {key: item for key, item in value.items() if key != "updatedAt"}
             return StoredResourceV1.from_record(value)
         except (KeyError, TypeError, ValueError) as exc:
             raise InvalidRepositoryResult(

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3] - 2026-09-05
+
+- Treat null structured get results as missing Resources and orphan candidates; malformed non-null results still fail closed.
+- Accept the validated structured update timestamp returned alongside immutable Resource values.
+- Share Object Common’s default payload registry with installed S3 discovery.
+- Add real PostgreSQL/MinIO first-publication, exact-read, idempotency and duplicate-discovery regression gates.
+
+
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project uses semantic versioning.
 

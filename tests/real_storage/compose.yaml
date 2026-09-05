@@ -1,0 +1,21 @@
+services:
+  database:
+    image: postgis/postgis@sha256:44126d872ac91993766c341e369c539e8196614321765d36a6f1bab0419a5fa5
+    platform: linux/amd64
+    ports: ["127.0.0.1:55441:5432"]
+    environment:
+      POSTGRES_DB: meridian
+      POSTGRES_USER: meridian
+      POSTGRES_PASSWORD: meridian-fixture-only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meridian -d meridian"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  objects:
+    image: minio/minio@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    command: server /data
+    ports: ["127.0.0.1:59441:9000"]
+    environment:
+      MINIO_ROOT_USER: meridian
+      MINIO_ROOT_PASSWORD: meridian-fixture-only
