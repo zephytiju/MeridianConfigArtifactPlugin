@@ -115,12 +115,13 @@ class FakeRuntime:
                 "orphan-candidates": "candidateId",
             }[resource.name]
             key = cast(str, data[key_name])
+            assert arguments["mode"] == "if_absent"
+            assert arguments.get("expectedVersion") is None
             if key in records:
-                stored = records[key]
-            else:
-                data["recordVersion"] = 1
-                records[key] = data
-                stored = data
+                raise ConditionalConflict("record already exists")
+            data["recordVersion"] = 1
+            records[key] = data
+            stored = data
             return self._result(expression, resource, stored)
         if method == "get":
             where = cast(Mapping[str, object], arguments["where"])

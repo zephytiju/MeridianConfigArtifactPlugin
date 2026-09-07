@@ -30,8 +30,8 @@ The identity is immutable across both profiles.
 - Artifact: structured metadata contains an exact digest-bearing `ObjectReference`; bytes exist
   only in the object Resource at `artifacts/<resourceId>`.
 - Channel: an append-only sequence of deterministic channel-version rows. Inserting the next row
-  and comparing the returned target implements provider-neutral compare-and-set without a cache or
-  new Catalog.
+  with explicit `if_absent` implements provider-neutral compare-and-set without a cache or
+  new Catalog. A duplicate next-version row conflicts even when both writers selected the same target.
 
 `DRAFT`, `PUBLISHED`, and `DEPRECATED` are the public lifecycle states. Publisher conveniences
 create immutable `PUBLISHED` versions directly. A published or deprecated version cannot be
@@ -71,3 +71,17 @@ revision 24, Kafka Streaming LLD revision 6, MeridianConstructs revision 45, and
 Artifact LLD revision 28. The plugin and schema contracts remain at 1.0.0.
 Query/projection/telemetry/audit/lineage/usage/cost remain capabilities or data, not Catalogs;
 NativeQuery is outside V1.
+
+## Explicit structured write modes
+
+The 1.1.0 candidate consumes the approved put-v2 mode contract (Catalogs/Public Interfaces
+revision 124 and ConfigArtifact LLD revision 44). Plugin and schema public contracts remain V1.
+Metadata, provenance and orphan candidate records are created with `if_absent`. Retries keep
+the existing scoped identity and immutable-content checks; no write intentionally upserts.
+Deprecation remains a version-checked patch.
+
+Channel initialization creates the first immutable pointer row. Existing-pointer promotion
+checks the observed public pointer version and atomically creates its successor row. This
+preserves the existing append-only CAS contract. The public initial `expected_pointer_version=0`
+is a pointer-sequence convention, never a structured Record `expected_version` precondition.
+All package-owned structured put requirements explicitly select operation version 2.0.0.

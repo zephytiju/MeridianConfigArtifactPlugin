@@ -248,7 +248,10 @@ def _structured_requirements(
     transactional: bool = True,
 ) -> tuple[CapabilityRequirement, ...]:
     requirements = [
-        CapabilityRequirement(f"meridian.structured.{method}", "1.0.0") for method in methods
+        CapabilityRequirement(
+            f"meridian.structured.{method}", "2.0.0" if method == "put" else "1.0.0"
+        )
+        for method in methods
     ]
     if transactional:
         requirements.append(
@@ -352,7 +355,7 @@ class ConfigArtifactSchemaProvider:
             extensions={
                 "design.hldRevision": 56,
                 "design.catalogRevision": 70,
-                "design.configArtifactLldRevision": 28,
+                "design.configArtifactLldRevision": 44,
                 "distribution": "meridian-plugin-config-artifact",
                 "catalogs": ["object", "structured"],
             },

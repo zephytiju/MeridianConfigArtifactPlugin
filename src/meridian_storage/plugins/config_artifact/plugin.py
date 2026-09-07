@@ -27,7 +27,7 @@ class ConfigArtifactPluginFactory:
                 "catalogs": "structured,object",
                 "design.hldRevision": "56",
                 "design.catalogRevision": "70",
-                "design.configArtifactLldRevision": "28",
+                "design.configArtifactLldRevision": "44",
             },
         )
 

@@ -7,6 +7,7 @@ import pytest
 from deployment import compose
 
 from meridian_storage import ConfigurationError, ErrorCode, OperationContext
+from meridian_storage.object_common import ByteRange
 from meridian_storage.plugins.config_artifact import (
     IdentityConflict,
     ResourceIdentity,
@@ -16,9 +17,10 @@ from meridian_storage.plugins.config_artifact import (
 )
 
 
+@pytest.mark.parametrize("backend", ["s3", "oci"])
 @pytest.mark.parametrize("explicit_registry", [False, True])
-def test_first_artifact_publication_and_byte_exact_read(explicit_registry):
-    runtime = compose()
+def test_first_artifact_publication_and_byte_exact_read(explicit_registry, backend):
+    runtime = compose(backend=backend)
     registry = default_payload_registry()
     baseline = len(registry)
     try:
@@ -50,6 +52,10 @@ def test_first_artifact_publication_and_byte_exact_read(explicit_registry):
             assert receipt.object_committed
             assert receipt.metadata_committed
             assert store.artifacts.read(store.artifacts.exact(identity)) == payload
+            assert store.artifacts.stat(receipt.resource).digest == receipt.resource.digest
+            assert (
+                store.artifacts.range_read(receipt.resource, ByteRange(7, 8192)) == payload[7:8193]
+            )
             assert store.artifacts.publish(**arguments).idempotent
             fresh = ResourceStore(runtime, **options)
             assert fresh.artifacts.read(fresh.artifacts.exact(identity)) == payload

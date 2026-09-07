@@ -14,11 +14,11 @@ from packaging.specifiers import SpecifierSet
 def test_distribution_metadata_and_license_material() -> None:
     name = "meridian-plugin-config-artifact"
     project = metadata(name)
-    assert version(name) == "1.0.3"
+    assert version(name) == "1.1.0"
     assert project["License-Expression"] == "Apache-2.0"
     assert SpecifierSet(project["Requires-Python"]) == SpecifierSet(">=3.12,<3.15")
     requirements = project.get_all("Requires-Dist") or []
-    assert "meridian-storage-core==1.0.0" in requirements
+    assert "meridian-storage-core==1.0.1" in requirements
     entry_points = {(item.group, item.name, item.value) for item in distribution(name).entry_points}
     assert entry_points == {
         (
