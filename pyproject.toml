@@ -43,7 +43,7 @@ test = [
   "meridian-storage-oci==1.0.3",
   "meridian-storage-s3==1.0.2",
   "mypy==1.17.1",
-  "pip==26.2",
+  "pip==26.2.1",
   "pip-audit==2.9.0",
   "pytest==9.0.3",
   "pytest-cov==6.2.1",
