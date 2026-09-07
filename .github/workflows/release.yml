@@ -54,7 +54,7 @@ jobs:
       - name: Verify real Artifact publication and exact reads
         run: |
           python -m venv .artifacts/acceptance-venv
-          .artifacts/acceptance-venv/bin/python -m pip install ".[s3]" meridian-storage-postgresql==2.0.0 pytest==9.0.3 pytest-cov==6.2.1
+          .artifacts/acceptance-venv/bin/python -m pip install ".[s3,oci]" meridian-storage-postgresql==2.1.1 pytest==9.0.3 pytest-cov==6.2.1
           .artifacts/acceptance-venv/bin/pytest tests/real_storage --no-cov
       - name: Stop disposable acceptance engines
         if: always()

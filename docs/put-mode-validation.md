@@ -1,7 +1,4 @@
-# Put-mode migration validation (1.1.0 candidate)
-
-This candidate is awaiting combined S3/OCI runtime acceptance before publication. The normal released package resolver succeeds; the prior Object dependency blocker is
-resolved by ObjectCommon/S3/OCI 1.0.2.
+# Put-mode migration validation (1.1.0)
 
 ## Implementation
 
@@ -16,40 +13,29 @@ The plugin validates and removes only adapter timestamps that are absent from a 
 channel `createdAt`, orphan `createdAt`/`updatedAt`, and provenance `updatedAt`. It still rejects
 unknown fields, invalid timestamps and changes to declared immutable logical fields.
 
-## Confirmed PostgreSQL blocker
+## Released compatibility
 
-PostgreSQL 2.0.0 and the latest tested release 2.1.0 append system timestamps as `createdAt` and
-`updatedAt` after projecting logical schema fields with those same names. A dictionary result
-therefore replaces logical values with system values. Both DML RETURNING and query projection
-contain these duplicate aliases. For example, an actual synthetic provenance create sent
-`createdAt=2026-09-07T02:32:25.701304Z` and returned
-`createdAt=2026-09-07T02:32:25.706010Z`. The immutable-field comparison correctly rejects it;
-Artifact publication rolls back metadata and reports incomplete publication after Object commit.
+Normal public package resolution uses Core 1.0.1, Semantics 2.0.0, Query/Object Common/S3 1.0.2,
+PostgreSQL 2.1.1 and OCI 1.0.3. PostgreSQL preserves declared logical timestamps in mutation and
+query results. Provenance compares every returned immutable field directly; no projection fallback
+or requested-value substitution remains. OCI implements the installed Core factory contract.
 
-The plugin resolves this through an explicit public `structured.query(select=...)` of all logical
-provenance fields inside the existing publication transaction when only the returned timestamp
-differs. Every persisted immutable field must still match; missing or different logical values
-fail. No requested value is substituted for database evidence. All eleven PostgreSQL/S3 tests
-now pass, including forced concurrent
-creates and channel CAS (same/different targets), duplicate/create conflict, changed immutable
-metadata rejection, exact byte reads, orphan retry/recovery and scope isolation.
+Both adapters are installed together, discovered by Core's normal entry points, and selected by
+ordinary deployment placements. Physical and capability fingerprints are required at startup.
+The deployment fixture performs adapter preflight to derive the physical pin; it injects no
+runtime adapter except in the intentional duplicate-registration rejection test.
 
-The coordinator is also arranging a MeridianPostgreSQLAdapter fidelity fix for declared logical
-timestamp values. This plugin workaround consumes only public Catalog calls; no adapter code is
-modified. S3/OCI normal ResourceStore interchangeability remains required before completion.
+## Acceptance
 
-## Existing OCI deployment limitation
+The 21 required real-engine tests run the same ResourceStore paths against PostgreSQL plus S3
+and PostgreSQL plus OCI. Engines are pinned disposable PostGIS, MinIO and Distribution 3.1.1.
+Coverage includes first publication, exact and range reads, stat, identical retry, different-digest
+conflict, concurrent configuration creation, concurrent channel initialization and existing-pointer
+CAS with same/different targets, immutable overwrite rejection, provenance, scope isolation and
+orphan recovery after Object commit. A fixed historical clock proves logical resource `createdAt`
+and channel `updatedAt` round-trip exactly. Shared payload registry usage returns to its baseline.
 
-OCI 1.0.2 still exports `OciDistributionAdapter` as its adapter entry point, and that constructor
-requires a binding. Core discovery instantiates registered adapter classes without arguments.
-The normal PostgreSQL/S3 deployment therefore uses the S3 extra in an isolated environment;
-installing OCI in that deployment prevents Core startup. No discovery filtering, wheel patch,
-source override or substitute factory is used here. Manifest compatibility and the upstream
-OCI direct-adapter evidence do not establish ResourceStore runtime interchangeability.
-
-## Review and release status
-
-Code review preserves append-only channel history, scoped identity/digest checks, strict logical
-field validation, explicit capabilities, and Object retention. No adapter implementation is
-vendored. Required real-engine CI must pass before routine merge/publication. No tag or package
-has been published for 1.1.0. The package hash evidence is build evidence only, not acceptance.
+The deterministic suite has 74 passing tests and 92.09% branch-inclusive coverage. Required CI
+also checks Python 3.12–3.14, lint, strict typing, contracts, security, reproducible builds and clean
+wheel installation. Release evidence records artifact and SBOM hashes. Publication uses the
+existing attested trusted-publishing workflow after review and green required CI.

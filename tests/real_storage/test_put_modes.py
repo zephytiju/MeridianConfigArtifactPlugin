@@ -4,6 +4,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import replace
+from datetime import UTC, datetime
 from threading import Barrier
 from uuid import uuid4
 
@@ -34,9 +35,9 @@ def scope(runtime, tenant):
         yield
 
 
-@pytest.fixture
-def deployed():
-    runtime = compose()
+@pytest.fixture(params=["s3", "oci"])
+def deployed(request):
+    runtime = compose(backend=request.param)
     try:
         yield runtime, "fixture-" + uuid4().hex
     finally:
@@ -177,8 +178,16 @@ def test_provenance_publication_preserves_immutable_fields(deployed):
     runtime, tenant = deployed
     name = uuid4().hex
     with scope(runtime, tenant):
-        store = ResourceStore(runtime)
+        clock = datetime(2026, 1, 2, 3, 4, 5, 123456, tzinfo=UTC)
+        store = ResourceStore(runtime, clock=lambda: clock)
         resource = publish(store, name, provenance=ProvenanceV1("builder", "1.0.0"))
+        assert resource.created_at == "2026-01-02T03:04:05.123456Z"
+        assert store.metadata.get_resource(resource.resource_id) == resource
+        pointer = store.artifacts.promote(
+            resource.ref, "stable", expected_pointer_version=0, actor="publisher"
+        )
+        assert pointer.updated_at == resource.created_at
+        assert store.channels.get("acceptance", "manifest", name, "stable") == pointer
         assert store.artifacts.read(resource) == b"immutable artifact"
         assert publish(store, name, provenance=ProvenanceV1("builder", "1.0.0")) == resource
 

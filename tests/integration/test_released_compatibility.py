@@ -23,7 +23,7 @@ def test_exact_released_predecessor_versions_and_entry_points(runtime) -> None:
     assert version("meridian-storage-query") == "1.0.2"
     assert version("meridian-storage-object-common") == "1.0.2"
     assert version("meridian-storage-s3") == "1.0.2"
-    assert version("meridian-storage-oci") == "1.0.2"
+    assert version("meridian-storage-oci") == "1.0.3"
     assert isinstance(runtime.catalog("structured"), StructuredCatalogSurface)
     assert isinstance(runtime.catalog("object"), ObjectCatalogSurface)
 

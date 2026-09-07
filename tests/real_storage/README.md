@@ -1,31 +1,26 @@
 # Real Artifact acceptance
 
-This deployment fixture provisions only disposable local PostgreSQL and MinIO resources.
-It imports released adapter packages and uses the public Meridian/ResourceStore path for
-publication and reads. No adapter runtimes or installed wheels are patched.
-
-After the declared package dependencies have been published:
+This deployment fixture provisions only disposable PostgreSQL, MinIO and Distribution 3.1.1
+resources. Both Object adapters are installed together; normal Meridian discovery and deployment
+placement select S3 or OCI. ResourceStore uses the same public operations for either backend.
+No installed wheel, discovery list or runtime factory is patched.
 
 ```sh
 python -m venv .venv-acceptance
 . .venv-acceptance/bin/activate
-python -m pip install '.[s3]' meridian-storage-postgresql==2.0.0 pytest==9.0.3 pytest-cov==6.2.1
+python -m pip install '.[s3,oci]' meridian-storage-postgresql==2.1.1 pytest==9.0.3 pytest-cov==6.2.1
 docker compose -p meridian-artifact-acceptance -f tests/real_storage/compose.yaml up -d --wait
 pytest tests/real_storage --no-cov
 docker compose -p meridian-artifact-acceptance -f tests/real_storage/compose.yaml down
 ```
 
-The dedicated CI job is a dependency of the package gate. Both default ResourceStore
-construction and explicit use of the shared default registry must publish new bytes,
-read them exactly, repeat idempotently, and reject conflicting content. Double registration
-of the installed S3 factory must continue to raise `MERIDIAN_DISCOVERY_DUPLICATE`.
+The required CI job gates packaging and repeats during release. Both default ResourceStore
+construction and explicit use of the shared default payload registry publish new bytes, read
+exact bytes and ranges, stat, repeat idempotently and reject conflicting content. Intentional
+double registration of S3 still raises `MERIDIAN_DISCOVERY_DUPLICATE`.
 
-Use a dedicated environment with the deployment’s PostgreSQL and S3 adapters. OCI 1.0.2
-remains covered by the unchanged direct-adapter suite in the test extra, but its legacy
-entry point requires a binding argument and cannot participate in Core discovery.
-Installing OCI in this deployment prevents startup; it requires a separate OCI factory fix.
-
-The mode tests add forced concurrent observations for both identical/different configuration
-payloads and same/different channel targets, direct duplicate-create rejection, immutable
-field preservation, scope isolation, provenance publication and orphan recovery. These are
-required CI tests; failing provider compatibility is retained as a failure, never skipped.
+Mode acceptance forces concurrent observations for identical/different configuration payloads
+and same/different channel targets. It verifies direct duplicate-create rejection, immutable
+field preservation, historical logical timestamps, provenance publication, scope isolation,
+and orphan recovery. Physical and capability fingerprints are required by normal Core startup.
+Tests fail on incompatible providers; they are never skipped or replaced with manifest assertions.

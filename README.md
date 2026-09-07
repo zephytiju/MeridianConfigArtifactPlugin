@@ -22,7 +22,7 @@ released provider; this library never imports either provider or its SDK.
 ## Compose
 
 Artifact bytes use Object Common's shared process-local default registry. Install the
-`s3` extra and start Meridian through installed-component discovery using deployment-owned
+`s3` or `oci` extra and start Meridian through installed-component discovery using deployment-owned
 bindings and migrations:
 
 ```python
@@ -41,9 +41,9 @@ explicitly to ResourceStore is also supported. Custom SPI compositions may share
 explicit `PayloadRegistry` with `S3AdapterFactory(payloads=registry)`; S3 1.0.1 preserves
 that exact object even when it is empty.
 
-The target combination is Core 1.0.1, Semantics/PostgreSQL 2.0.0, Query 1.0.2,
-Object Common/S3/OCI 1.0.2, and ResourceStore 1.1.0.
-The 1.1.0 candidate is not released; combined S3/OCI runtime acceptance is pending.
+The validated combination is Core 1.0.1, Semantics 2.0.0, PostgreSQL 2.1.1,
+Query/Object Common/S3 1.0.2, OCI 1.0.3, and ResourceStore 1.1.0.
+Both Object backends pass the same ResourceStore acceptance suite through normal Core discovery.
 See `docs/put-mode-validation.md` for compatibility validation.
 Regenerate deployment manifest fingerprints after upgrading package versions.
 

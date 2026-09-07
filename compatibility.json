@@ -22,7 +22,7 @@
   },
   "optionalConformance": {
     "meridian-storage-s3": "1.0.2",
-    "meridian-storage-oci": "1.0.2"
+    "meridian-storage-oci": "1.0.3"
   },
   "catalogsConsumed": [
     "object",

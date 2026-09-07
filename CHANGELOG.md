@@ -1,10 +1,12 @@
 # Changelog
 
-## 1.1.0
+## [1.1.0] - 2026-09-07
 
 - Consume released explicit structured put modes and compatible Object packages.
 - Create immutable metadata, provenance, orphan and channel-version rows with `if_absent`.
 - Preserve ResourceStore calls, append-only channel CAS, duplicate handling and cleanup.
+- Pin PostgreSQL 2.1.1 and OCI 1.0.3 for logical timestamp fidelity and installed runtime discovery.
+- Require the same real ResourceStore acceptance through both S3 and OCI.
 
 ## [1.0.3] - 2026-09-05
 

@@ -1,13 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Deployment-owned disposable PostgreSQL/S3 fixture using released packages."""
+"""Deployment-owned disposable PostgreSQL/S3/OCI fixture using released packages."""
 
 import os
 from copy import deepcopy
+from importlib.metadata import entry_points
 
 import boto3
 from psycopg import connect
 
 from meridian_storage import Meridian, RuntimeConfig
+from meridian_storage.adapters.oci import OciDistributionBinding, configured_capability_manifest
 from meridian_storage.adapters.postgresql import MigrationExecutor, SchemaCompiler
 from meridian_storage.adapters.postgresql._settings import PostgreSQLSettings
 from meridian_storage.adapters.postgresql.descriptor import manifest
@@ -24,7 +26,33 @@ class FixtureSecrets:
         return SecretValue(reference.reference.encode())
 
 
-def compose(*, duplicate_factory=False):
+def configure_oci(binding, bundle):
+    endpoint = os.environ.get("MERIDIAN_TEST_OCI_ENDPOINT", "http://127.0.0.1:55442")
+    objects = [r for r in bundle.resources if r.ref.catalog == "object"]
+    assert len(objects) == 1
+    oci = OciDistributionBinding(
+        resource=objects[0].ref,
+        endpoint=endpoint,
+        repository="meridian/artifact-acceptance",
+        allow_insecure_http=True,
+        deletion_enabled=True,
+    )
+    binding.update(
+        adapterId="oci-distribution",
+        engineProfile="oci-distribution",
+        engineVersion="1.1.1",
+        endpoint=endpoint,
+        physicalNamespace=oci.repository,
+        settings={
+            "resource": objects[0].ref.canonical,
+            "authMode": "anonymous",
+            "deletionEnabled": True,
+        },
+        requiredCapabilityFingerprint=configured_capability_manifest(oci).fingerprint,
+    )
+
+
+def compose(*, backend="s3", duplicate_factory=False):
     port = int(os.environ.get("MERIDIAN_TEST_PG_PORT", "55441"))
     endpoint = os.environ.get("MERIDIAN_TEST_S3_ENDPOINT", "http://127.0.0.1:59441")
     provider = ConfigArtifactSchemaProvider()
@@ -138,9 +166,17 @@ def compose(*, duplicate_factory=False):
         requiredCapabilityFingerprint=s3_capability_manifest(s3config).fingerprint,
         requiredPhysicalFingerprint=None,
     )
+    if backend == "oci":
+        configure_oci(s3, bundle)
+    elif backend != "s3":
+        raise ValueError("unknown Object backend")
     binding = BindingConfig.from_mapping(s3, "fixture")
     secrets = FixtureSecrets()
-    factory = S3AdapterFactory()
+    factory = next(
+        entry.load()()
+        for entry in entry_points(group="meridian_storage.adapters")
+        if entry.name == binding.adapter_id
+    )
     probe = factory.create(
         AdapterCreateContext(
             binding=binding,
@@ -233,7 +269,7 @@ def compose(*, duplicate_factory=False):
     runtime = Meridian(
         RuntimeConfig.from_mapping(config),
         secret_resolver=secrets,
-        adapter_factories=[factory] if duplicate_factory else [],
+        adapter_factories=[S3AdapterFactory()] if duplicate_factory else [],
     )
     runtime.start()
     return runtime

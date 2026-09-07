@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: meridian
       POSTGRES_PASSWORD: meridian-fixture-only
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U meridian -d meridian"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U meridian -d meridian"]
       interval: 2s
       timeout: 2s
       retries: 30
@@ -19,3 +19,8 @@ services:
     environment:
       MINIO_ROOT_USER: meridian
       MINIO_ROOT_PASSWORD: meridian-fixture-only
+  registry:
+    image: registry:3.1.1@sha256:1be55279f18a2fe1a74edf2664cac61c1bea305b7b4642dab412e7affdcb3e33
+    ports: ["127.0.0.1:55442:5000"]
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"

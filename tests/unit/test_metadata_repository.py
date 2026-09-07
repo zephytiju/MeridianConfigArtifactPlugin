@@ -196,10 +196,7 @@ def test_channel_and_orphan_adapter_timestamps(store, runtime, timestamp):
             parse({**expected.to_record(), "unrecognized": "field"})
 
 
-@pytest.mark.parametrize("projection", ["correct", "different", "missing"])
-def test_provenance_timestamp_collision_requires_logical_readback(
-    store, runtime, monkeypatch, projection
-):
+def test_provenance_timestamp_collision_is_rejected(store, runtime, monkeypatch):
     real_execute = runtime.execute
     value = {
         "formatVersion": "meridian.config-artifact.provenance-record.v1",
@@ -211,21 +208,9 @@ def test_provenance_timestamp_collision_requires_logical_readback(
 
     def collision(expression):
         result = real_execute(expression)
-        if expression.method == "put":
-            return replace(result, data={**result.data, "createdAt": "2026-01-02T03:04:06.123456Z"})
-        if expression.method == "query":
-            assert set(expression.arguments["select"]) == set(value)
-            if projection == "missing":
-                return replace(result, data={"items": [], "cursor": None})
-            record = dict(value)
-            if projection == "different":
-                record["createdAt"] = "2026-01-02T03:04:07.123456Z"
-            return replace(result, data={"items": [record], "cursor": None})
-        return result
+        assert expression.method == "put"
+        return replace(result, data={**result.data, "createdAt": "2026-01-02T03:04:06.123456Z"})
 
     monkeypatch.setattr(runtime, "execute", collision)
-    if projection == "correct":
-        assert store.metadata.put_provenance(value)["createdAt"] == value["createdAt"]
-    else:
-        with pytest.raises(InvalidRepositoryResult):
-            store.metadata.put_provenance(value)
+    with pytest.raises(InvalidRepositoryResult):
+        store.metadata.put_provenance(value)

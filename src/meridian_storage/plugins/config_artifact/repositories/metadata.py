@@ -257,29 +257,6 @@ class MetadataRepository:
         except (TypeError, ValueError) as exc:
             raise InvalidRepositoryResult("invalid structured provenance timestamp") from exc
         observed = {key: item for key, item in stored.items() if key != "recordVersion"}
-        if observed != dict(value) and {
-            key: item for key, item in observed.items() if key != "createdAt"
-        } == {key: item for key, item in value.items() if key != "createdAt"}:
-            # Some released adapters flatten system createdAt over the logical
-            # field. Verify the actual schema fields through a public projection
-            # inside the caller's existing publication transaction; never waive
-            # the immutable comparison or substitute the requested timestamp.
-            result = self._meridian.execute(
-                self._surface.query(
-                    resource=self.provenance_resource.to_dict(),
-                    where={"provenanceId": value["provenanceId"]},
-                    select=tuple(value),
-                    limit=1,
-                )
-            )
-            items, _ = _page(result, "structured provenance verification result")
-            if len(items) != 1:
-                raise InvalidRepositoryResult("structured provenance verification missing record")
-            projected = _logical_record(
-                _mapping(items[0], "provenance verification record"), "provenance verification"
-            )
-            observed = {key: item for key, item in projected.items() if key != "recordVersion"}
-            stored = {**stored, **observed}
         if observed != dict(value):
             raise InvalidRepositoryResult("structured provenance result changed immutable fields")
         return stored
