@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- Consume released explicit structured put modes and compatible Object packages.
+- Create immutable metadata, provenance, orphan and channel-version rows with `if_absent`.
+- Preserve ResourceStore calls, append-only channel CAS, duplicate handling and cleanup.
+
 ## [1.0.3] - 2026-09-05
 
 - Treat null structured get results as missing Resources and orphan candidates; malformed non-null results still fail closed.

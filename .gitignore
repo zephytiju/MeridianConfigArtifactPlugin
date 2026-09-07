@@ -10,3 +10,5 @@ build/
 dist/
 .artifacts/
 *.egg-info/
+
+.venv-real/

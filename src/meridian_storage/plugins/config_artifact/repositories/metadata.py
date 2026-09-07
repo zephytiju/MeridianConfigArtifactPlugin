@@ -49,6 +49,14 @@ def _logical_record(value: Mapping[str, object], description: str) -> Mapping[st
     return values
 
 
+def _without_record_timestamps(value: Mapping[str, object], *fields: str) -> Mapping[str, object]:
+    """Validate adapter timestamps that are not fields of the logical model."""
+    for field in fields:
+        if field in value:
+            utc_timestamp(cast(str, value[field]))
+    return {key: item for key, item in value.items() if key not in fields}
+
+
 def _page(result: OperationResult, description: str) -> tuple[Sequence[object], str | None]:
     data = _mapping(result.data, description)
     items = data.get("items")
@@ -115,6 +123,7 @@ class MetadataRepository:
             self._surface.put(
                 resource=self.metadata_resource.to_dict(),
                 data=resource.to_record(),
+                mode="if_absent",
             )
         )
         return self._parse_resource(_record(result, "structured resource put result"))
@@ -199,6 +208,7 @@ class MetadataRepository:
             self._surface.put(
                 resource=self.channel_resource.to_dict(),
                 data=channel.to_record(),
+                mode="if_absent",
             )
         )
         return self._parse_channel(_record(result, "structured channel put result"))
@@ -236,10 +246,40 @@ class MetadataRepository:
 
     def put_provenance(self, value: Mapping[str, JsonValue]) -> Mapping[str, object]:
         result = self._meridian.execute(
-            self._surface.put(resource=self.provenance_resource.to_dict(), data=value)
+            self._surface.put(
+                resource=self.provenance_resource.to_dict(), data=value, mode="if_absent"
+            )
         )
-        stored = _record(result, "structured provenance put result")
+        try:
+            stored = _without_record_timestamps(
+                _record(result, "structured provenance put result"), "updatedAt"
+            )
+        except (TypeError, ValueError) as exc:
+            raise InvalidRepositoryResult("invalid structured provenance timestamp") from exc
         observed = {key: item for key, item in stored.items() if key != "recordVersion"}
+        if observed != dict(value) and {
+            key: item for key, item in observed.items() if key != "createdAt"
+        } == {key: item for key, item in value.items() if key != "createdAt"}:
+            # Some released adapters flatten system createdAt over the logical
+            # field. Verify the actual schema fields through a public projection
+            # inside the caller's existing publication transaction; never waive
+            # the immutable comparison or substitute the requested timestamp.
+            result = self._meridian.execute(
+                self._surface.query(
+                    resource=self.provenance_resource.to_dict(),
+                    where={"provenanceId": value["provenanceId"]},
+                    select=tuple(value),
+                    limit=1,
+                )
+            )
+            items, _ = _page(result, "structured provenance verification result")
+            if len(items) != 1:
+                raise InvalidRepositoryResult("structured provenance verification missing record")
+            projected = _logical_record(
+                _mapping(items[0], "provenance verification record"), "provenance verification"
+            )
+            observed = {key: item for key, item in projected.items() if key != "recordVersion"}
+            stored = {**stored, **observed}
         if observed != dict(value):
             raise InvalidRepositoryResult("structured provenance result changed immutable fields")
         return stored
@@ -247,7 +287,11 @@ class MetadataRepository:
     def put_orphan(self, orphan: OrphanCandidateV1) -> OrphanCandidateV1:
         try:
             result = self._meridian.execute(
-                self._surface.put(resource=self.orphan_resource.to_dict(), data=orphan.to_record())
+                self._surface.put(
+                    resource=self.orphan_resource.to_dict(),
+                    data=orphan.to_record(),
+                    mode="if_absent",
+                )
             )
         except MeridianError as exc:
             if exc.category is ErrorCategory.CONFLICT:
@@ -332,7 +376,7 @@ class MetadataRepository:
     @staticmethod
     def _parse_channel(value: Mapping[str, object]) -> ResourceChannelV1:
         try:
-            return ResourceChannelV1.from_record(value)
+            return ResourceChannelV1.from_record(_without_record_timestamps(value, "createdAt"))
         except (KeyError, TypeError, ValueError) as exc:
             raise InvalidRepositoryResult(
                 "structured channel result violated the V1 contract",
@@ -342,7 +386,9 @@ class MetadataRepository:
     @staticmethod
     def _parse_orphan(value: Mapping[str, object]) -> OrphanCandidateV1:
         try:
-            return OrphanCandidateV1.from_record(value)
+            return OrphanCandidateV1.from_record(
+                _without_record_timestamps(value, "createdAt", "updatedAt")
+            )
         except (KeyError, TypeError, ValueError) as exc:
             raise InvalidRepositoryResult(
                 "structured orphan result violated the V1 contract",

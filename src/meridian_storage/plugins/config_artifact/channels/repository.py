@@ -96,12 +96,18 @@ class ChannelRepository:
             selected_channel,
             required=False,
         )
-        observed_version = 0 if current is None else current.pointer_version
-        if observed_version != expected_pointer_version:
+        # The public pointer sequence predates structured Record versions. Its
+        # initial zero is never forwarded as a structured expected_version.
+        if current is None:
+            matches = expected_pointer_version == 0
+            pointer_version = 1
+        else:
+            matches = current.pointer_version == expected_pointer_version
+            pointer_version = current.pointer_version + 1
+        if not matches:
             raise StaleChannelPointer(
                 resource_ref=f"{resource.namespace}:{resource.kind}/{resource.name}#{selected_channel}"
             )
-        pointer_version = observed_version + 1
         requested = ResourceChannelV1(
             channel_version_id=channel_version_id(
                 resource.namespace,
@@ -120,6 +126,9 @@ class ChannelRepository:
             updated_at=utc_timestamp(self._clock()),
         )
         try:
+            # Each next-version row is immutable. Atomic if_absent arbitrates
+            # both first initialization and later CAS contenders, even when
+            # two writers observed the same predecessor or chose the same target.
             winner = self._metadata.put_channel(requested)
         except MeridianError as exc:
             if exc.category is ErrorCategory.CONFLICT:

@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 NAME = "meridian-plugin-config-artifact"
-VERSION = "1.0.3"
+VERSION = "1.1.0"
 
 
 def sha256(path: Path) -> str:

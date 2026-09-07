@@ -15,7 +15,7 @@ channel pointers are structured records.
 python -m pip install meridian-plugin-config-artifact
 ```
 
-Python 3.12–3.14, Core/Semantics/Query 1.0.0, and Object Common 1.0.1
+Python 3.12–3.14, Core 1.0.1, Semantics 2.0.0, Query 1.0.2, and Object Common 1.0.2
 are supported. Add `meridian-plugin-config-artifact[s3]` or `[oci]` only to co-install a
 released provider; this library never imports either provider or its SDK.
 
@@ -41,8 +41,10 @@ explicitly to ResourceStore is also supported. Custom SPI compositions may share
 explicit `PayloadRegistry` with `S3AdapterFactory(payloads=registry)`; S3 1.0.1 preserves
 that exact object even when it is empty.
 
-The target combination is Core/Semantics/Query/PostgreSQL 1.0.0, Object Common/S3
-1.0.1, and ResourceStore 1.0.3. OCI 1.0.1 retains the existing optional conformance set.
+The target combination is Core 1.0.1, Semantics/PostgreSQL 2.0.0, Query 1.0.2,
+Object Common/S3/OCI 1.0.2, and ResourceStore 1.1.0.
+The 1.1.0 candidate is not released; combined S3/OCI runtime acceptance is pending.
+See `docs/put-mode-validation.md` for compatibility validation.
 Regenerate deployment manifest fingerprints after upgrading package versions.
 
 The schema entry point contributes these logical Resources by default:

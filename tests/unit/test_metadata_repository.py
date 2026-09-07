@@ -158,3 +158,74 @@ def test_resource_result_structured_update_timestamp(store, timestamp):
             store.metadata._parse_resource(record)
     with pytest.raises(InvalidRepositoryResult):
         store.metadata._parse_resource({**resource.to_record(), "unknown": "field"})
+
+
+@pytest.mark.parametrize("timestamp", ["2026-01-02T03:04:05.123456Z", "invalid", None, 42])
+def test_channel_and_orphan_adapter_timestamps(store, runtime, timestamp):
+    resource = store.artifacts.publish(
+        namespace="ns",
+        kind="bundle",
+        name="timestamps",
+        version="1",
+        payload=b"x",
+        actor="p",
+    ).resource
+    pointer = store.artifacts.promote(resource.ref, "active", expected_pointer_version=0, actor="p")
+    runtime.fail_next_metadata_put = True
+    with pytest.raises(IncompletePublication):
+        store.artifacts.publish(
+            namespace="ns",
+            kind="bundle",
+            name="orphan-timestamps",
+            version="1",
+            payload=b"x",
+            actor="p",
+        )
+    orphan = store.metadata.list_orphans().items[0]
+    cases = (
+        (store.metadata._parse_channel, pointer, {"createdAt": timestamp}),
+        (store.metadata._parse_orphan, orphan, {"createdAt": timestamp, "updatedAt": timestamp}),
+    )
+    for parse, expected, extra in cases:
+        if timestamp == "2026-01-02T03:04:05.123456Z":
+            assert parse({**expected.to_record(), **extra}) == expected
+        else:
+            with pytest.raises(InvalidRepositoryResult):
+                parse({**expected.to_record(), **extra})
+        with pytest.raises(InvalidRepositoryResult):
+            parse({**expected.to_record(), "unrecognized": "field"})
+
+
+@pytest.mark.parametrize("projection", ["correct", "different", "missing"])
+def test_provenance_timestamp_collision_requires_logical_readback(
+    store, runtime, monkeypatch, projection
+):
+    real_execute = runtime.execute
+    value = {
+        "formatVersion": "meridian.config-artifact.provenance-record.v1",
+        "provenanceId": "logical",
+        "resourceId": "logical",
+        "document": {},
+        "createdAt": "2026-01-02T03:04:05.123456Z",
+    }
+
+    def collision(expression):
+        result = real_execute(expression)
+        if expression.method == "put":
+            return replace(result, data={**result.data, "createdAt": "2026-01-02T03:04:06.123456Z"})
+        if expression.method == "query":
+            assert set(expression.arguments["select"]) == set(value)
+            if projection == "missing":
+                return replace(result, data={"items": [], "cursor": None})
+            record = dict(value)
+            if projection == "different":
+                record["createdAt"] = "2026-01-02T03:04:07.123456Z"
+            return replace(result, data={"items": [record], "cursor": None})
+        return result
+
+    monkeypatch.setattr(runtime, "execute", collision)
+    if projection == "correct":
+        assert store.metadata.put_provenance(value)["createdAt"] == value["createdAt"]
+    else:
+        with pytest.raises(InvalidRepositoryResult):
+            store.metadata.put_provenance(value)

@@ -90,13 +90,13 @@ def test_resource_wire_record_validates_against_language_neutral_contract() -> N
 def test_contracts_and_compatibility_are_packaged() -> None:
     compatibility = compatibility_document()
     assert compatibility["distribution"] == "meridian-plugin-config-artifact"
-    assert compatibility["version"] == "1.0.3"
-    assert compatibility["lockedDesign"]["configArtifactLldRevision"] == 28
+    assert compatibility["version"] == "1.1.0"
+    assert compatibility["lockedDesign"]["configArtifactLldRevision"] == 44
     assert compatibility["releasedDependencies"] == {
-        "meridian-storage-core": "1.0.0",
-        "meridian-storage-object-common": "1.0.1",
-        "meridian-storage-query": "1.0.0",
-        "meridian-storage-semantics": "1.0.0",
+        "meridian-storage-core": "1.0.1",
+        "meridian-storage-object-common": "1.0.2",
+        "meridian-storage-query": "1.0.2",
+        "meridian-storage-semantics": "2.0.0",
     }
     assert resource_channel_contract()["title"] == "Meridian Resource Channel V1"
     assert provenance_contract()["title"] == "Meridian Provenance V1"

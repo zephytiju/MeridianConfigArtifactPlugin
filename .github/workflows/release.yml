@@ -54,7 +54,7 @@ jobs:
       - name: Verify real Artifact publication and exact reads
         run: |
           python -m venv .artifacts/acceptance-venv
-          .artifacts/acceptance-venv/bin/python -m pip install ".[s3]" meridian-storage-postgresql==1.0.0 pytest==9.0.3 pytest-cov==6.2.1
+          .artifacts/acceptance-venv/bin/python -m pip install ".[s3]" meridian-storage-postgresql==2.0.0 pytest==9.0.3 pytest-cov==6.2.1
           .artifacts/acceptance-venv/bin/pytest tests/real_storage --no-cov
       - name: Stop disposable acceptance engines
         if: always()
@@ -68,10 +68,10 @@ jobs:
           python scripts/compare_artifacts.py .artifacts/first .artifacts/second
           mkdir release
           cp .artifacts/first/* release/
-          python scripts/generate_sbom.py --output release/meridian-plugin-config-artifact-1.0.3.spdx.json .artifacts/first/*
+          python scripts/generate_sbom.py --output release/meridian-plugin-config-artifact-1.1.0.spdx.json .artifacts/first/*
           cd release && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
-      - name: Verify v1.0.3 release evidence
-        run: python scripts/verify_release_evidence.py evidence/v1.0.3.json release
+      - name: Verify v1.1.0 release evidence
+        run: python scripts/verify_release_evidence.py evidence/v1.1.0.json release
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-distributions

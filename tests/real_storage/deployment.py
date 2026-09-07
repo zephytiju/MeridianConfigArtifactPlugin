@@ -168,7 +168,7 @@ def compose(*, duplicate_factory=False):
                 {
                     "name": p.manifest().catalog_name,
                     "package": p.manifest().package_name,
-                    "contract": "1.x",
+                    "contract": p.manifest().catalog_contract_version,
                     "requiredFingerprint": p.manifest().fingerprint,
                 }
                 for p in catalogs

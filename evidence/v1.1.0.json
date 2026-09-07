@@ -1,0 +1,46 @@
+{
+  "formatVersion": "meridian.config-artifact.release-evidence.v1",
+  "package": "meridian-plugin-config-artifact",
+  "version": "1.1.0",
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "sourceDateEpoch": 1787875200,
+  "lockedDesign": {
+    "hldRevision": 114,
+    "catalogsPublicInterfacesRevision": 124,
+    "engineAdaptersRevision": 24,
+    "kafkaStreamingLldRevision": 6,
+    "meridianConstructsRevision": 45,
+    "configArtifactLldRevision": 44
+  },
+  "predecessors": {
+    "meridian-storage-core": "1.0.1",
+    "meridian-storage-object-common": "1.0.2",
+    "meridian-storage-query": "1.0.2",
+    "meridian-storage-semantics": "2.0.0",
+    "meridian-storage-postgresql": "2.0.0",
+    "meridian-storage-s3": "1.0.2",
+    "meridian-storage-oci": "1.0.2"
+  },
+  "verification": {
+    "tests": 76,
+    "coveragePercent": 92.14,
+    "realPostgresqlS3Passed": 11,
+    "realPostgresqlS3Failed": 0,
+    "ruff": "passed",
+    "mypyStrict": "passed",
+    "contracts": "passed",
+    "bandit": "passed-no-files-skipped",
+    "pipAudit": "no-known-vulnerabilities",
+    "twine": "passed",
+    "reproducibleBuild": true
+  },
+  "artifacts": {
+    "meridian-plugin-config-artifact-1.1.0.spdx.json": "sha256:b7654d1cbd4e523555d804fb9997abedf1d81a4f40e5ae171924148e5a94e24f",
+    "meridian_plugin_config_artifact-1.1.0-py3-none-any.whl": "sha256:d27a5174cb11fc1bbd6c7bc35419eef322fa85dbe7d03550cafbaa6b6a188ef1",
+    "meridian_plugin_config_artifact-1.1.0.tar.gz": "sha256:ab4fbf5a8eba5db082376d945892fe3748e8a95ebcec8df9a9547d68311da3c2"
+  },
+  "status": "pending-runtime-interchangeability",
+  "limitations": [
+    "Unreleased candidate. PostgreSQL logical provenance fields verified through public projection; full S3/OCI runtime interchangeability pending owner repair."
+  ]
+}
