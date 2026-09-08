@@ -34,7 +34,10 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - name: Install exact test dependencies
-        run: python -m pip install --disable-pip-version-check '.[test]'
+        run: |
+          python -m pip install --require-hashes -r requirements-validation.txt
+          python -m pip install --disable-pip-version-check '.[test]'
+          python -m pip check
       - name: Check source and contracts
         run: |
           ruff format --check src tests scripts
@@ -45,8 +48,12 @@ jobs:
         run: pytest --cov-report=xml
 
   real-storage:
-    name: Real PostgreSQL, S3 and OCI Artifact acceptance
+    name: Real PostgreSQL, S3 and OCI Artifact acceptance (${{ matrix.dependencies }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dependencies: [locked, current]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -54,7 +61,17 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
-      - run: python -m pip install '.[s3,oci]' meridian-storage-postgresql==2.1.1 pytest==9.0.3 pytest-cov==6.2.1
+      - name: Install selected dependency closure
+        env:
+          DEPENDENCY_SELECTION: ${{ matrix.dependencies }}
+        run: |
+          if [ "$DEPENDENCY_SELECTION" = locked ]; then
+            python -m pip install --require-hashes -r requirements-validation.txt
+          fi
+          python -m pip install --report public-install.json '.[test]'
+          python -m pip check
+          python scripts/verify_contracts.py
+          pytest
       - name: Start disposable real engines
         run: docker compose -p meridian-artifact-acceptance -f tests/real_storage/compose.yaml up -d --wait
       - name: First publication, exact reads, and discovery rejection
@@ -65,8 +82,10 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: real-storage-acceptance
-          path: real-storage.xml
+          name: real-storage-acceptance-${{ matrix.dependencies }}
+          path: |
+            real-storage.xml
+            public-install.json
           if-no-files-found: error
 
   security:
@@ -81,7 +100,10 @@ jobs:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: pyproject.toml
-      - run: python -m pip install --disable-pip-version-check '.[test]'
+      - run: |
+          python -m pip install --require-hashes -r requirements-validation.txt
+          python -m pip install --disable-pip-version-check '.[test]'
+          python -m pip check
       - run: bandit -r src -c pyproject.toml
       - run: pip-audit --skip-editable
 
@@ -100,7 +122,10 @@ jobs:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: pyproject.toml
-      - run: python -m pip install --disable-pip-version-check '.[test]'
+      - run: |
+          python -m pip install --require-hashes -r requirements-validation.txt
+          python -m pip install --disable-pip-version-check '.[test]'
+          python -m pip check
       - name: Build twice
         run: |
           python -m build --no-isolation --outdir .artifacts/first
@@ -112,10 +137,17 @@ jobs:
           python scripts/compare_artifacts.py .artifacts/first .artifacts/second
           mkdir .artifacts/release
           cp .artifacts/first/* .artifacts/release/
-          python scripts/generate_sbom.py --output .artifacts/release/meridian-plugin-config-artifact-1.1.0.spdx.json .artifacts/first/*
+          python scripts/generate_sbom.py --output .artifacts/release/meridian-plugin-config-artifact-1.1.1.spdx.json .artifacts/first/*
           cd .artifacts/release && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
-      - name: Verify v1.1.0 release evidence
-        run: python scripts/verify_release_evidence.py evidence/v1.1.0.json .artifacts/release
+      - name: Verify v1.1.1 release evidence
+        run: python scripts/verify_release_evidence.py evidence/v1.1.1.json .artifacts/release
+      - name: Verify immutable v1.1.0 evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir .artifacts/released-v110
+          gh release download v1.1.0 --dir .artifacts/released-v110
+          python scripts/verify_release_evidence.py evidence/v1.1.0.json .artifacts/released-v110
       - name: Verify immutable v1.0.3 evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -149,6 +181,7 @@ jobs:
           python -m venv .artifacts/venv
           WHEEL_PATH=$(find .artifacts/first -name '*.whl' -type f -print -quit)
           .artifacts/venv/bin/python -m pip install --disable-pip-version-check "$WHEEL_PATH"
+          .artifacts/venv/bin/python -m pip check
           cd /tmp
           "$GITHUB_WORKSPACE/.artifacts/venv/bin/python" -I -c 'from importlib.metadata import entry_points; plugins={x.name:x for x in entry_points(group="meridian_storage.plugins")}; schemas={x.name:x for x in entry_points(group="meridian_storage.schemas")}; assert plugins["config-artifact"].load()().plugin_id == "config-artifact"; assert schemas["config-artifact"].load()().provider_id == "meridian.plugin.config-artifact"'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

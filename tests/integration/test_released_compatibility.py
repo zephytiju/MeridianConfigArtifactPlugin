@@ -14,16 +14,17 @@ from meridian_storage.plugins.config_artifact import ResourceStore
 from meridian_storage.plugins.config_artifact.schemas import ConfigArtifactSchemaProvider
 from meridian_storage.semantics import StructuredCatalogSurface
 from meridian_storage.spi import capability_violations
+from packaging.specifiers import SpecifierSet
 
 
 @pytest.mark.integration
-def test_exact_released_predecessor_versions_and_entry_points(runtime) -> None:
-    assert version("meridian-storage-core") == "1.0.1"
-    assert version("meridian-storage-semantics") == "2.0.0"
-    assert version("meridian-storage-query") == "1.0.2"
-    assert version("meridian-storage-object-common") == "1.0.2"
-    assert version("meridian-storage-s3") == "1.0.2"
-    assert version("meridian-storage-oci") == "1.0.3"
+def test_compatible_released_predecessors_and_entry_points(runtime) -> None:
+    assert version("meridian-storage-core") in SpecifierSet(">=1.1.0,<2")
+    assert version("meridian-storage-semantics") in SpecifierSet(">=2.0.1,<3")
+    assert version("meridian-storage-query") in SpecifierSet(">=1.0.3,<2")
+    assert version("meridian-storage-object-common") in SpecifierSet(">=1.0.3,<2")
+    assert version("meridian-storage-s3") in SpecifierSet(">=1.0.4,<2")
+    assert version("meridian-storage-oci") in SpecifierSet(">=1.1.0,<2")
     assert isinstance(runtime.catalog("structured"), StructuredCatalogSurface)
     assert isinstance(runtime.catalog("object"), ObjectCatalogSurface)
 

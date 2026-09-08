@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Verify locked contracts, exact released pins, and provider-neutral boundaries."""
+"""Verify locked contracts, public compatibility bounds, and provider-neutral boundaries."""
 
 from __future__ import annotations
 
@@ -31,14 +31,18 @@ from meridian_storage.semantics import __version__ as semantics_version
 from packaging.requirements import Requirement
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_PINS = {
-    "meridian-storage-core": "==1.0.1",
-    "meridian-storage-object-common": "==1.0.2",
-    "meridian-storage-query": "==1.0.2",
-    "meridian-storage-semantics": "==2.0.0",
+EXPECTED_BOUNDS = {
+    "meridian-storage-core": str(Requirement("meridian-storage-core>=1.1.0,<2").specifier),
+    "meridian-storage-object-common": str(
+        Requirement("meridian-storage-object-common>=1.0.3,<2").specifier
+    ),
+    "meridian-storage-query": str(Requirement("meridian-storage-query>=1.0.3,<2").specifier),
+    "meridian-storage-semantics": str(
+        Requirement("meridian-storage-semantics>=2.0.1,<3").specifier
+    ),
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 FORBIDDEN_IMPORTS = (
     "boto",
     "botocore",
@@ -60,14 +64,14 @@ def _load_json(path: Path) -> dict[str, Any]:
     return cast(dict[str, Any], value)
 
 
-def _distribution_pins() -> dict[str, str]:
+def _distribution_bounds() -> dict[str, str]:
     distribution = metadata.distribution(DISTRIBUTION)
     result: dict[str, str] = {}
     for raw in distribution.requires or ():
         requirement = Requirement(raw)
-        if requirement.name in EXPECTED_PINS and requirement.marker is None:
+        if requirement.name in EXPECTED_BOUNDS and requirement.marker is None:
             result[requirement.name] = str(requirement.specifier)
-    _require(result == EXPECTED_PINS, f"released Meridian pins differ: {result!r}")
+    _require(result == EXPECTED_BOUNDS, f"public Meridian bounds differ: {result!r}")
     return result
 
 
@@ -134,7 +138,7 @@ def main() -> None:
     _require(compatibility["distribution"] == DISTRIBUTION, "compatibility name differs")
     _require(compatibility["version"] == VERSION, "compatibility version differs")
     _require(
-        compatibility["lockedDesign"]["configArtifactLldRevision"] == 44,
+        compatibility["lockedDesign"]["configArtifactLldRevision"] == 46,
         "locked LLD revision differs",
     )
     _require(len(bundle.resources) == 5 and len(bundle.schemas) == 4, "bundle differs")
@@ -150,14 +154,20 @@ def main() -> None:
         "meridian-storage-semantics": semantics_version,
     }
     _require(
-        versions == {name: pin.removeprefix("==") for name, pin in EXPECTED_PINS.items()},
-        "released Meridian versions differ",
+        all(
+            Requirement(name + EXPECTED_BOUNDS[name]).specifier.contains(value)
+            for name, value in versions.items()
+        ),
+        "installed Meridian versions violate public bounds",
     )
     _require(
-        compatibility["releasedDependencies"] == versions,
-        "compatibility ledger versions differ",
+        all(
+            str(Requirement(name + bound).specifier) == EXPECTED_BOUNDS[name]
+            for name, bound in compatibility["dependencyCompatibility"].items()
+        ),
+        "compatibility ledger bounds differ",
     )
-    pins = _distribution_pins()
+    pins = _distribution_bounds()
     checked_source_files = _verify_import_boundary()
     _require(len(tuple(ROOT.glob("pyproject.toml"))) == 1, "repository must have one project")
     _require(
