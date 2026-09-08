@@ -15,17 +15,18 @@ import zipfile
 from email.parser import BytesParser
 from pathlib import Path, PurePosixPath
 
+from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
 
-EXPECTED_PINS = {
-    "meridian-storage-core==1.0.1",
-    "meridian-storage-object-common==1.0.2",
-    "meridian-storage-query==1.0.2",
-    "meridian-storage-semantics==2.0.0",
+EXPECTED_BOUNDS = {
+    str(Requirement("meridian-storage-core>=1.1.0,<2")),
+    str(Requirement("meridian-storage-object-common>=1.0.3,<2")),
+    str(Requirement("meridian-storage-query>=1.0.3,<2")),
+    str(Requirement("meridian-storage-semantics>=2.0.1,<3")),
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
 NORMALIZED_DISTRIBUTION = "meridian_plugin_config_artifact"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 
 def _require(condition: bool, message: str) -> None:
@@ -87,11 +88,11 @@ def _verify_wheel(path: Path) -> dict[str, object]:
             "Python range differs",
         )
         runtime_pins = {
-            value
+            str(Requirement(value))
             for value in metadata_value.get_all("Requires-Dist", [])
             if value.startswith("meridian-storage-") and "; extra ==" not in value
         }
-        _require(runtime_pins == EXPECTED_PINS, "wheel runtime pins differ")
+        _require(runtime_pins == EXPECTED_BOUNDS, "wheel runtime compatibility bounds differ")
         _verify_record(archive, f"{root}/RECORD")
     return {"file": path.name, "sha256": _sha256(path), "entries": len(names)}
 

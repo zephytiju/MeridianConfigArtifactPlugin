@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 — 2026-09-08
+
+- Admit the released Core 1.1.0 dependency closure with bounded public API requirements.
+- Keep exact release-validation selections and public artifact hashes in a separate lock.
+- Preserve structured put-v2, immutable metadata/bytes, digest conflicts, channel CAS,
+  provider integrity and two-Binding orphan recovery under PostgreSQL 2.2.0, S3 1.0.4 and OCI 1.1.0.
+- Retain all real-engine, security, reproducibility and attested CI publication gates.
+
 ## [1.1.0] - 2026-09-07
 
 - Consume released explicit structured put modes and compatible Object packages.

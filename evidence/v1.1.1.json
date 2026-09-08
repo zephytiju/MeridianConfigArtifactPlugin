@@ -1,0 +1,54 @@
+{
+  "formatVersion": "meridian.config-artifact.release-evidence.v1",
+  "package": "meridian-plugin-config-artifact",
+  "version": "1.1.1",
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "sourceDateEpoch": 1787875200,
+  "observedAt": "2026-09-08T05:24:40.534483+00:00",
+  "lockedDesign": {
+    "hldRevision": 114,
+    "catalogsPublicInterfacesRevision": 124,
+    "engineAdaptersRevision": 24,
+    "kafkaStreamingLldRevision": 6,
+    "meridianConstructsRevision": 113,
+    "configArtifactLldRevision": 46
+  },
+  "predecessors": {
+    "meridian-storage-core": "1.1.0",
+    "meridian-storage-object-common": "1.0.3",
+    "meridian-storage-query": "1.0.3",
+    "meridian-storage-semantics": "2.0.1",
+    "meridian-storage-postgresql": "2.2.0",
+    "meridian-storage-s3": "1.0.4",
+    "meridian-storage-oci": "1.1.0",
+    "meridian-storage-projection": "1.0.3"
+  },
+  "validationLockSha256": "dc912ad36592de9a076c614c507f99496ab8c835ddaa7e65a5ce1843a8793c0f",
+  "verification": {
+    "tests": 74,
+    "coveragePercent": 92.04,
+    "realPostgresqlS3OciPassed": 21,
+    "realPostgresqlS3OciFailed": 0,
+    "realPostgresqlS3OciSkipped": 0,
+    "unconstrainedSemantics210Tests": 74,
+    "unconstrainedSemantics210RealTests": 21,
+    "ruff": "passed",
+    "mypyStrict": "passed",
+    "contracts": "passed",
+    "bandit": "passed-no-files-skipped",
+    "pipAudit": "no-known-vulnerabilities-in-public-dependencies; unpublished candidate scanned with bandit",
+    "twine": "passed",
+    "reproducibleBuild": true,
+    "cleanWheelRealAcceptance": "passed: 74 tests, 21 real-engine tests, pip check, isolated site-packages import"
+  },
+  "artifacts": {
+    "meridian-plugin-config-artifact-1.1.1.spdx.json": "sha256:00f096e22161e362f1c7af4371e0ab11edb4162415ac1c785a769dbf95ff546d",
+    "meridian_plugin_config_artifact-1.1.1-py3-none-any.whl": "sha256:ccb6735b6cb8744864de21d25d6e206cf0879386bf16526871f9d85d3103c3fd",
+    "meridian_plugin_config_artifact-1.1.1.tar.gz": "sha256:7a800a13d8939c52ba16822b775d1816112c886d24d8f93a55639894f0028b46"
+  },
+  "status": "verified",
+  "limitations": [
+    "Other engine/provider/library combinations remain unverified."
+  ],
+  "verificationScope": "Local acceptance and reproducible artifact hashes. Merge, CI publication and registry verification are recorded by the delivery task and GitHub release."
+}

@@ -15,7 +15,8 @@ channel pointers are structured records.
 python -m pip install meridian-plugin-config-artifact
 ```
 
-Python 3.12–3.14, Core 1.0.1, Semantics 2.0.0, Query 1.0.2, and Object Common 1.0.2
+Python 3.12–3.14, Core >=1.1.0,<2, Semantics >=2.0.1,<3, Query >=1.0.3,<2,
+and Object Common >=1.0.3,<2
 are supported. Add `meridian-plugin-config-artifact[s3]` or `[oci]` only to co-install a
 released provider; this library never imports either provider or its SDK.
 
@@ -41,8 +42,10 @@ explicitly to ResourceStore is also supported. Custom SPI compositions may share
 explicit `PayloadRegistry` with `S3AdapterFactory(payloads=registry)`; S3 1.0.1 preserves
 that exact object even when it is empty.
 
-The validated combination is Core 1.0.1, Semantics 2.0.0, PostgreSQL 2.1.1,
-Query/Object Common/S3 1.0.2, OCI 1.0.3, and ResourceStore 1.1.0.
+The release-validation selection is Core 1.1.0, Semantics 2.0.1, PostgreSQL 2.2.0,
+Query/Object Common/Projection 1.0.3, S3 1.0.4, OCI 1.1.0, and ResourceStore 1.1.1.
+Public dependency bounds describe API compatibility; this exact selection and its hashes live
+in `requirements-validation.txt`. See [dependency compatibility](docs/dependency-compatibility.md).
 Both Object backends pass the same ResourceStore acceptance suite through normal Core discovery.
 See `docs/put-mode-validation.md` for compatibility validation.
 Regenerate deployment manifest fingerprints after upgrading package versions.
