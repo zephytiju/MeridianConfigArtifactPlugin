@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.2 — 2026-09-09
+
+- Validate exactly one scoped structured patch Record before returning deprecation; reject
+  malformed results, identity/immutable-field changes and missing versions within the write
+  transaction, preserving stale conflicts and idempotent replay.
+- Accept whole-second and fractional UTC storage timestamps while retaining six-digit output,
+  immutable payload bytes and digests; compare provenance timestamps canonically.
+- Add real PostgreSQL/S3/OCI deprecation, concurrency, scope and rollback regressions.
+
 ## 1.1.1 — 2026-09-08
 
 - Admit the released Core 1.1.0 dependency closure with bounded public API requirements.

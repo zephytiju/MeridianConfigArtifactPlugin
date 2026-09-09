@@ -1,0 +1,82 @@
+{
+  "formatVersion": "meridian.config-artifact.release-evidence.v1",
+  "package": "meridian-plugin-config-artifact",
+  "version": "1.1.2",
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "sourceDateEpoch": 1787875200,
+  "observedAt": "2026-09-09T22:25:27.906453+00:00",
+  "lockedDesign": {
+    "hldRevision": 114,
+    "catalogsPublicInterfacesRevision": 127,
+    "engineAdaptersRevision": 24,
+    "kafkaStreamingLldRevision": 6,
+    "meridianConstructsRevision": 113,
+    "configArtifactLldRevision": 48
+  },
+  "validationLockSha256": "dc912ad36592de9a076c614c507f99496ab8c835ddaa7e65a5ce1843a8793c0f",
+  "verification": {
+    "reports": {
+      "baseline": {
+        "tests": "8",
+        "failures": "8",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "unit": {
+        "tests": "120",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "real-storage": {
+        "tests": "53",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "locked-unit": {
+        "tests": "120",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "locked-real": {
+        "tests": "53",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "wheel-unit": {
+        "tests": "120",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "wheel-real": {
+        "tests": "53",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      }
+    },
+    "coveragePercent": 92.37,
+    "ruff": "passed",
+    "mypyStrict": "passed",
+    "contracts": "passed",
+    "bandit": "passed-no-files-skipped",
+    "pipAudit": "no known vulnerabilities in public dependencies; unpublished candidate scanned by bandit",
+    "reproducibleBuild": true,
+    "twine": "passed",
+    "freshWheelImport": "isolated site-packages; pip check passed"
+  },
+  "artifacts": {
+    "meridian-plugin-config-artifact-1.1.2.spdx.json": "sha256:fb1e9c47ab97f1424ec616acd4afaaf35c18ae3ad5f9ffbb7bbfe3fc5ae3e289",
+    "meridian_plugin_config_artifact-1.1.2-py3-none-any.whl": "sha256:dc6f9cd65a7dd35ffe9946a67d055a7836bdf8de39ed78bc98c62747c3dbdf6b",
+    "meridian_plugin_config_artifact-1.1.2.tar.gz": "sha256:3e01961aedcb5ca38bd1650db6a0a276d8d93039417e49a020507593d7930fec"
+  },
+  "status": "verified",
+  "limitations": [
+    "Only the locked and recorded PostgreSQL 2.3.1 public dependency selections are verified."
+  ],
+  "verificationScope": "Local installed-wheel acceptance and reproducible artifacts; merge, CI publication, registry and provenance are verified separately in the Feishu delivery task."
+}

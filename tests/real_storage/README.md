@@ -9,7 +9,7 @@ No installed wheel, discovery list or runtime factory is patched.
 python -m venv .venv-acceptance
 . .venv-acceptance/bin/activate
 python -m pip install --require-hashes -r requirements-validation.txt
-python -m pip install '.[s3,oci]' meridian-storage-postgresql==2.2.0 pytest==9.0.3 pytest-cov==6.2.1
+python -m pip install '.[s3,oci]' meridian-storage-postgresql==2.3.1 pytest==9.0.3 pytest-cov==6.2.1
 docker compose -p meridian-artifact-acceptance -f tests/real_storage/compose.yaml up -d --wait
 pytest tests/real_storage --no-cov
 docker compose -p meridian-artifact-acceptance -f tests/real_storage/compose.yaml down
@@ -25,3 +25,9 @@ and same/different channel targets. It verifies direct duplicate-create rejectio
 field preservation, historical logical timestamps, provenance publication, scope isolation,
 and orphan recovery. Physical and capability fingerprints are required by normal Core startup.
 Tests fail on incompatible providers; they are never skipped or replaced with manifest assertions.
+
+The deprecation regression uses Configuration and Artifact publication, stale and concurrent
+calls, repeated calls, two isolated tenants with the same identity, malformed result injection
+after the real database patch, and outer transaction aborts. Whole-second publication and fresh
+reads exercise released PostgreSQL timestamp serialization; provenance, canonical output,
+resource identity, payload digests, immutable metadata and exact Object bytes are preserved.

@@ -60,3 +60,27 @@ def test_canonical_collections_are_detached_bounded_json() -> None:
         sequence("not-an-array", "items")
     with pytest.raises(ValueError, match="at most"):
         sequence(list(range(129)), "items")
+
+
+@pytest.mark.parametrize("fraction", ["", ".1", ".123", ".123456", ".000000"])
+def test_whole_and_fractional_seconds_keep_canonical_microseconds(fraction):
+    expected = (fraction.removeprefix(".") + "000000")[:6]
+    assert utc_timestamp(f"2026-09-09T00:00:00{fraction}Z") == f"2026-09-09T00:00:00.{expected}Z"
+
+
+@pytest.mark.parametrize(
+    "timestamp",
+    [
+        "2026-02-29T00:00:00Z",
+        "2026-13-01T00:00:00Z",
+        "2026-09-09T24:00:00Z",
+        "2026-09-09T00:00:60Z",
+        "2026-09-09T00:00:00.Z",
+        "2026-09-09T00:00:00.1234567Z",
+        "2026-09-09T00:00:00",
+        "2026-09-09T00:00:00+01:00",
+    ],
+)
+def test_invalid_dates_and_non_utc_strings_fail(timestamp):
+    with pytest.raises(ValueError, match="UTC RFC 3339"):
+        utc_timestamp(timestamp)

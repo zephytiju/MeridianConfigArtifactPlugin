@@ -137,10 +137,17 @@ jobs:
           python scripts/compare_artifacts.py .artifacts/first .artifacts/second
           mkdir .artifacts/release
           cp .artifacts/first/* .artifacts/release/
-          python scripts/generate_sbom.py --output .artifacts/release/meridian-plugin-config-artifact-1.1.1.spdx.json .artifacts/first/*
+          python scripts/generate_sbom.py --output .artifacts/release/meridian-plugin-config-artifact-1.1.2.spdx.json .artifacts/first/*
           cd .artifacts/release && sha256sum meridian_plugin_config_artifact-* > SHA256SUMS
-      - name: Verify v1.1.1 release evidence
-        run: python scripts/verify_release_evidence.py evidence/v1.1.1.json .artifacts/release
+      - name: Verify v1.1.2 release evidence
+        run: python scripts/verify_release_evidence.py evidence/v1.1.2.json .artifacts/release
+      - name: Verify immutable v1.1.1 evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir .artifacts/released-v111
+          gh release download v1.1.1 --dir .artifacts/released-v111
+          python scripts/verify_release_evidence.py evidence/v1.1.1.json .artifacts/released-v111
       - name: Verify immutable v1.1.0 evidence
         env:
           GH_TOKEN: ${{ github.token }}

@@ -43,7 +43,11 @@ explicit `PayloadRegistry` with `S3AdapterFactory(payloads=registry)`; S3 1.0.1 
 that exact object even when it is empty.
 
 The release-validation selection is Core 1.1.0, Semantics 2.0.1, PostgreSQL 2.2.0,
-Query/Object Common/Projection 1.0.3, S3 1.0.4, OCI 1.1.0, and ResourceStore 1.1.1.
+Query/Object Common/Projection 1.0.3, S3 1.0.4, OCI 1.1.0, and ResourceStore 1.1.2.
+
+Version 1.1.2 corrects deprecation collection-result handling and accepts whole-second UTC
+storage values while keeping six-digit canonical output. See [upgrade and reproduction
+notes](docs/deprecation-utc-correction.md) for the PostgreSQL 2.3.1 validation selection.
 Public dependency bounds describe API compatibility; this exact selection and its hashes live
 in `requirements-validation.txt`. See [dependency compatibility](docs/dependency-compatibility.md).
 Both Object backends pass the same ResourceStore acceptance suite through normal Core discovery.

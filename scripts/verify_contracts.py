@@ -42,7 +42,7 @@ EXPECTED_BOUNDS = {
     ),
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 FORBIDDEN_IMPORTS = (
     "boto",
     "botocore",
@@ -138,7 +138,7 @@ def main() -> None:
     _require(compatibility["distribution"] == DISTRIBUTION, "compatibility name differs")
     _require(compatibility["version"] == VERSION, "compatibility version differs")
     _require(
-        compatibility["lockedDesign"]["configArtifactLldRevision"] == 46,
+        compatibility["lockedDesign"]["configArtifactLldRevision"] == 48,
         "locked LLD revision differs",
     )
     _require(len(bundle.resources) == 5 and len(bundle.schemas) == 4, "bundle differs")
