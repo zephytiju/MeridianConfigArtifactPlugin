@@ -131,15 +131,77 @@ class MetadataRepository:
     def deprecate_resource(self, resource: StoredResourceV1) -> StoredResourceV1:
         if resource.record_version is None:
             raise InvalidRepositoryResult("resource has no recordVersion for conditional patch")
-        result = self._meridian.execute(
-            self._surface.patch(
-                resource=self.metadata_resource.to_dict(),
-                where={"resourceId": resource.resource_id},
-                changes={"state": ResourceState.DEPRECATED.value},
-                expected_version=resource.record_version,
+        # Validation is part of the write transaction: an invalid result must not
+        # commit a transition that the caller was told had failed.
+        with self.transaction():
+            result = self._meridian.execute(
+                self._surface.patch(
+                    resource=self.metadata_resource.to_dict(),
+                    where={"resourceId": resource.resource_id},
+                    changes={"state": ResourceState.DEPRECATED.value},
+                    expected_version=resource.record_version,
+                )
             )
-        )
-        return self._parse_resource(_record(result, "structured resource patch result"))
+            return self._deprecation_result(result, resource)
+
+    def _deprecation_result(
+        self, result: OperationResult, resource: StoredResourceV1
+    ) -> StoredResourceV1:
+        data = result.data
+        if (
+            not isinstance(data, Sequence)
+            or isinstance(data, str | bytes | bytearray)
+            or len(data) != 1
+        ):
+            raise InvalidRepositoryResult(
+                "structured resource patch must return exactly one Record"
+            )
+        if result.resources != (self.metadata_resource,):
+            raise InvalidRepositoryResult("structured resource patch returned a different scope")
+        (item,) = data
+        record = _mapping(item, "structured resource patch Record")
+        if "values" in record:
+            required = {
+                "collectionRef",
+                "recordId",
+                "recordVersion",
+                "values",
+                "createdAt",
+                "updatedAt",
+            }
+            if required - record.keys() or record.keys() - required - {"formatVersion"}:
+                raise InvalidRepositoryResult("invalid structured patch Record envelope")
+            if record.get("formatVersion", "meridian.record.v1") != "meridian.record.v1":
+                raise InvalidRepositoryResult("invalid structured patch Record format")
+            if record["recordId"] != resource.resource_id:
+                raise InvalidRepositoryResult("structured patch Record identity did not match")
+            try:
+                collection = ResourceRef.parse(
+                    _mapping(record["collectionRef"], "patch collectionRef"), catalog="structured"
+                )
+                utc_timestamp(cast(str, record["createdAt"]))
+                utc_timestamp(cast(str, record["updatedAt"]))
+            except (TypeError, ValueError) as exc:
+                raise InvalidRepositoryResult("invalid patch Record scope or timestamps") from exc
+            if collection != self.metadata_resource:
+                raise InvalidRepositoryResult(
+                    "structured resource patch returned a different scope"
+                )
+        stored = self._parse_resource(_logical_record(record, "structured resource patch Record"))
+        expected = {**resource.to_record(), "state": ResourceState.DEPRECATED.value}
+        if stored.to_record() != expected:
+            raise InvalidRepositoryResult(
+                "structured resource patch changed identity or immutable fields"
+            )
+        if (
+            stored.record_version in (None, "")
+            or stored.record_version == resource.record_version
+            or (isinstance(stored.record_version, int) and stored.record_version < 0)
+        ):
+            raise InvalidRepositoryResult(
+                "structured resource patch did not return a new recordVersion"
+            )
+        return stored
 
     def list_resources(
         self,
@@ -251,9 +313,13 @@ class MetadataRepository:
             )
         )
         try:
-            stored = _without_record_timestamps(
-                _record(result, "structured provenance put result"), "updatedAt"
+            stored = dict(
+                _without_record_timestamps(
+                    _record(result, "structured provenance put result"), "updatedAt"
+                )
             )
+            if "createdAt" in stored:
+                stored["createdAt"] = utc_timestamp(cast(str, stored["createdAt"]))
         except (TypeError, ValueError) as exc:
             raise InvalidRepositoryResult("invalid structured provenance timestamp") from exc
         observed = {key: item for key, item in stored.items() if key != "recordVersion"}

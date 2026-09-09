@@ -1,0 +1,228 @@
+{
+  "baseline": [
+    {
+      "name": "meridian-plugin-config-artifact",
+      "version": "1.1.1",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/f6/ef/6d3d81231d009881c541f8f8784b766ab3f32848b7a71b6b3ccc86d100b7/meridian_plugin_config_artifact-1.1.1-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=ccb6735b6cb8744864de21d25d6e206cf0879386bf16526871f9d85d3103c3fd",
+          "hashes": {
+            "sha256": "ccb6735b6cb8744864de21d25d6e206cf0879386bf16526871f9d85d3103c3fd"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-postgresql",
+      "version": "2.3.1",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/e9/39/5bfe33b4d03e9018b86522705c3289c173c0a36ac030c1a3f548269b136d/meridian_storage_postgresql-2.3.1-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=ac1499c91dcfe6e389a74527c3f005e5180a8ef0d0594df874154ef668c72744",
+          "hashes": {
+            "sha256": "ac1499c91dcfe6e389a74527c3f005e5180a8ef0d0594df874154ef668c72744"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-core",
+      "version": "1.1.0",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/aa/ab/eaeab612cacaef7a1ec798811a345f0e0934b4f7224c903c95a7550f8514/meridian_storage_core-1.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=fc7372a17993f43ec285e3d52c0e9c458ef8e6f5ce13bb2d1b01b064aa8eff49",
+          "hashes": {
+            "sha256": "fc7372a17993f43ec285e3d52c0e9c458ef8e6f5ce13bb2d1b01b064aa8eff49"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-object-common",
+      "version": "1.0.3",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/d3/a6/e6343b6ad4ccf53fe1de8090129cf10bd94846bf3daa324ddb7e71cfceaa/meridian_storage_object_common-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=089012bebb00870a38b615e41c907454d418e7ddaffaf3d0f13db8bf1ea3e4a1",
+          "hashes": {
+            "sha256": "089012bebb00870a38b615e41c907454d418e7ddaffaf3d0f13db8bf1ea3e4a1"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-oci",
+      "version": "1.1.0",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/52/04/607ba7f8dd01667d519855bc5630c3d3c399d1b3adf22ca0bc73f53f694d/meridian_storage_oci-1.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=6ef2aab16cb05c4cb90862675cf10080e49d9edfb9707661dc73ad6c2de46dfb",
+          "hashes": {
+            "sha256": "6ef2aab16cb05c4cb90862675cf10080e49d9edfb9707661dc73ad6c2de46dfb"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-projection",
+      "version": "1.0.3",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/09/b6/d5a3e7869ac6f64976f0b09cc437e8d00e5081ac68ac073e5212b917c51c/meridian_storage_projection-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=671282aeee9102c713eba0463c48ba72b8afc4560bff765dba7a58073b9da0ea",
+          "hashes": {
+            "sha256": "671282aeee9102c713eba0463c48ba72b8afc4560bff765dba7a58073b9da0ea"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-query",
+      "version": "1.0.3",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/d6/b9/ef743ce02b3b1f61f95e1750c3771d86907b5a63d221d1487e200aa20e3e/meridian_storage_query-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=615035e5d50fd6b1cb6bbdc042eaca2c07cf7f2cc5fe0db68a2c66dd7e36455b",
+          "hashes": {
+            "sha256": "615035e5d50fd6b1cb6bbdc042eaca2c07cf7f2cc5fe0db68a2c66dd7e36455b"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-s3",
+      "version": "1.0.4",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/d1/2e/3328e04d0482ec8ef9850490ba614708a6947c14fc6eb5392b93698dd78a/meridian_storage_s3-1.0.4-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=6f38b4ada0bab49631f3f52a95e1f7b1b5d67d713224da14344a3e5c8c9675e4",
+          "hashes": {
+            "sha256": "6f38b4ada0bab49631f3f52a95e1f7b1b5d67d713224da14344a3e5c8c9675e4"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-semantics",
+      "version": "2.1.0",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/b3/84/58f5864ff5e286222f6bcbe268ccd2ba3d93ab7c17ba28d4b1fc64470126/meridian_storage_semantics-2.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=d3ccf4903a6422b60a05e34732695c9a60f3fb57da99b70f81a2bda2f867bf4f",
+          "hashes": {
+            "sha256": "d3ccf4903a6422b60a05e34732695c9a60f3fb57da99b70f81a2bda2f867bf4f"
+          }
+        }
+      }
+    }
+  ],
+  "candidate": [],
+  "wheel": [
+    {
+      "name": "meridian-storage-postgresql",
+      "version": "2.3.1",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/e9/39/5bfe33b4d03e9018b86522705c3289c173c0a36ac030c1a3f548269b136d/meridian_storage_postgresql-2.3.1-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=ac1499c91dcfe6e389a74527c3f005e5180a8ef0d0594df874154ef668c72744",
+          "hashes": {
+            "sha256": "ac1499c91dcfe6e389a74527c3f005e5180a8ef0d0594df874154ef668c72744"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-core",
+      "version": "1.1.0",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/aa/ab/eaeab612cacaef7a1ec798811a345f0e0934b4f7224c903c95a7550f8514/meridian_storage_core-1.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=fc7372a17993f43ec285e3d52c0e9c458ef8e6f5ce13bb2d1b01b064aa8eff49",
+          "hashes": {
+            "sha256": "fc7372a17993f43ec285e3d52c0e9c458ef8e6f5ce13bb2d1b01b064aa8eff49"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-object-common",
+      "version": "1.0.3",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/d3/a6/e6343b6ad4ccf53fe1de8090129cf10bd94846bf3daa324ddb7e71cfceaa/meridian_storage_object_common-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=089012bebb00870a38b615e41c907454d418e7ddaffaf3d0f13db8bf1ea3e4a1",
+          "hashes": {
+            "sha256": "089012bebb00870a38b615e41c907454d418e7ddaffaf3d0f13db8bf1ea3e4a1"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-oci",
+      "version": "1.1.0",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/52/04/607ba7f8dd01667d519855bc5630c3d3c399d1b3adf22ca0bc73f53f694d/meridian_storage_oci-1.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=6ef2aab16cb05c4cb90862675cf10080e49d9edfb9707661dc73ad6c2de46dfb",
+          "hashes": {
+            "sha256": "6ef2aab16cb05c4cb90862675cf10080e49d9edfb9707661dc73ad6c2de46dfb"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-projection",
+      "version": "1.0.3",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/09/b6/d5a3e7869ac6f64976f0b09cc437e8d00e5081ac68ac073e5212b917c51c/meridian_storage_projection-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=671282aeee9102c713eba0463c48ba72b8afc4560bff765dba7a58073b9da0ea",
+          "hashes": {
+            "sha256": "671282aeee9102c713eba0463c48ba72b8afc4560bff765dba7a58073b9da0ea"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-query",
+      "version": "1.0.3",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/d6/b9/ef743ce02b3b1f61f95e1750c3771d86907b5a63d221d1487e200aa20e3e/meridian_storage_query-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=615035e5d50fd6b1cb6bbdc042eaca2c07cf7f2cc5fe0db68a2c66dd7e36455b",
+          "hashes": {
+            "sha256": "615035e5d50fd6b1cb6bbdc042eaca2c07cf7f2cc5fe0db68a2c66dd7e36455b"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-s3",
+      "version": "1.0.4",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/d1/2e/3328e04d0482ec8ef9850490ba614708a6947c14fc6eb5392b93698dd78a/meridian_storage_s3-1.0.4-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=6f38b4ada0bab49631f3f52a95e1f7b1b5d67d713224da14344a3e5c8c9675e4",
+          "hashes": {
+            "sha256": "6f38b4ada0bab49631f3f52a95e1f7b1b5d67d713224da14344a3e5c8c9675e4"
+          }
+        }
+      }
+    },
+    {
+      "name": "meridian-storage-semantics",
+      "version": "2.1.0",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/b3/84/58f5864ff5e286222f6bcbe268ccd2ba3d93ab7c17ba28d4b1fc64470126/meridian_storage_semantics-2.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=d3ccf4903a6422b60a05e34732695c9a60f3fb57da99b70f81a2bda2f867bf4f",
+          "hashes": {
+            "sha256": "d3ccf4903a6422b60a05e34732695c9a60f3fb57da99b70f81a2bda2f867bf4f"
+          }
+        }
+      }
+    }
+  ]
+}

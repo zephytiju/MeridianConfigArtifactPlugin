@@ -134,13 +134,13 @@ class FakeRuntime:
             matches = self._matches(records.values(), where)
             if not matches:
                 raise ResourceNotFound("record not found")
-            stored = matches[0]
             expected = arguments.get("expectedVersion")
-            if expected is not None and expected != stored["recordVersion"]:
+            if expected is not None and any(expected != row["recordVersion"] for row in matches):
                 raise ConditionalConflict("record version did not match")
-            stored.update(cast(Mapping[str, object], arguments["changes"]))
-            stored["recordVersion"] = cast(int, stored["recordVersion"]) + 1
-            return self._result(expression, resource, stored)
+            for stored in matches:
+                stored.update(cast(Mapping[str, object], arguments["changes"]))
+                stored["recordVersion"] = cast(int, stored["recordVersion"]) + 1
+            return self._result(expression, resource, matches)
         if method == "query":
             where = cast(Mapping[str, object], arguments.get("where", {}))
             matches = self._matches(records.values(), where)

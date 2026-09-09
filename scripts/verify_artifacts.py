@@ -26,7 +26,7 @@ EXPECTED_BOUNDS = {
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
 NORMALIZED_DISTRIBUTION = "meridian_plugin_config_artifact"
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 
 
 def _require(condition: bool, message: str) -> None:

@@ -66,9 +66,10 @@ def utc_timestamp(value: datetime | str) -> str:
         return value.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     selected = bounded_string(value, "timestamp", 64)
     try:
-        parsed = datetime.strptime(selected, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC)
+        template = "%Y-%m-%dT%H:%M:%S.%fZ" if "." in selected else "%Y-%m-%dT%H:%M:%SZ"
+        parsed = datetime.strptime(selected, template).replace(tzinfo=UTC)
     except ValueError as exc:
-        raise ValueError("timestamp must be UTC RFC 3339 with microseconds") from exc
+        raise ValueError("timestamp must be UTC RFC 3339 with optional microseconds") from exc
     return parsed.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
