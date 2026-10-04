@@ -13,8 +13,8 @@ services:
       timeout: 2s
       retries: 30
   objects:
-    image: minio/minio@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
-    command: server /data
+    image: bitnamilegacy/minio@sha256:6dabb4a2088c9a79908de3bc05f4586c23ad2182c8908e7e3acbf61c1467fb20
+    command: server /bitnami/minio/data
     ports: ["127.0.0.1:59441:9000"]
     environment:
       MINIO_ROOT_USER: meridian
