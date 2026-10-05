@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from importlib.metadata import distribution, metadata, version
 from pathlib import Path
 
@@ -24,13 +26,12 @@ def test_distribution_metadata_and_license_material() -> None:
     # carries ITS producer-era declaration — the compatibility assertion
     # is version-window membership, not specifier-string equality with
     # the consumer's declaration.
-    consumer = Requirement(
-        next(
-            line.strip().strip('\"')
-            for line in Path(__file__).parents[2].joinpath("pyproject.toml").read_text().splitlines()
-            if line.strip().startswith('\"meridian-storage-core')
-        )
+    declared = re.search(
+        r'"(meridian-storage-core[^"]*)"',
+        Path(__file__).parents[2].joinpath("pyproject.toml").read_text(encoding="utf-8"),
     )
+    assert declared, "the consumer declares meridian-storage-core"
+    consumer = Requirement(declared.group(1))
     assert consumer.specifier == SpecifierSet(">=1,<2")
     installed_core = version("meridian-storage-core")
     assert consumer.specifier.contains(installed_core), installed_core
