@@ -19,10 +19,10 @@ from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
 
 EXPECTED_BOUNDS = {
-    str(Requirement("meridian-storage-core>=1.1.0,<2")),
-    str(Requirement("meridian-storage-object-common>=1.0.3,<2")),
-    str(Requirement("meridian-storage-query>=1.0.3,<2")),
-    str(Requirement("meridian-storage-semantics>=2.0.1,<3")),
+    str(Requirement("meridian-storage-core>=1,<2")),
+    str(Requirement("meridian-storage-object-common>=1,<2")),
+    str(Requirement("meridian-storage-query>=1,<2")),
+    str(Requirement("meridian-storage-semantics>=2,<3")),
 }
 DISTRIBUTION = "meridian-plugin-config-artifact"
 NORMALIZED_DISTRIBUTION = "meridian_plugin_config_artifact"
