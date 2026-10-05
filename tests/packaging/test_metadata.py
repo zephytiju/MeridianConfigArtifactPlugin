@@ -24,7 +24,7 @@ def test_distribution_metadata_and_license_material() -> None:
         for value in requirements
         if Requirement(value).name == "meridian-storage-core"
     )
-    assert core.specifier == SpecifierSet(">=1.1.0,<2")
+    assert core.specifier == SpecifierSet(">=1,<2")
     assert core.specifier.contains("1.2.0")
     assert not core.specifier.contains("2.0.0")
     entry_points = {(item.group, item.name, item.value) for item in distribution(name).entry_points}
