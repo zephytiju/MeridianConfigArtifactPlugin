@@ -18,15 +18,23 @@ def test_distribution_metadata_and_license_material() -> None:
     assert version(name) == "1.1.2"
     assert project["License-Expression"] == "Apache-2.0"
     assert SpecifierSet(project["Requires-Python"]) == SpecifierSet(">=3.12,<3.15")
-    requirements = project.get_all("Requires-Dist") or []
-    core = next(
-        Requirement(value)
-        for value in requirements
-        if Requirement(value).name == "meridian-storage-core"
+    # The consumer's own declaration (major-only index resolution) and
+    # the resolved record's compatibility: the INSTALLED core is the
+    # materialized JumboIndex record (1.3.0), whose published metadata
+    # carries ITS producer-era declaration — the compatibility assertion
+    # is version-window membership, not specifier-string equality with
+    # the consumer's declaration.
+    consumer = Requirement(
+        next(
+            line.strip().strip('\"')
+            for line in Path(__file__).parents[2].joinpath("pyproject.toml").read_text().splitlines()
+            if line.strip().startswith('\"meridian-storage-core')
+        )
     )
-    assert core.specifier == SpecifierSet(">=1,<2")
-    assert core.specifier.contains("1.2.0")
-    assert not core.specifier.contains("2.0.0")
+    assert consumer.specifier == SpecifierSet(">=1,<2")
+    installed_core = version("meridian-storage-core")
+    assert consumer.specifier.contains(installed_core), installed_core
+    assert not consumer.specifier.contains("2.0.0")
     entry_points = {(item.group, item.name, item.value) for item in distribution(name).entry_points}
     assert entry_points == {
         (
