@@ -82,3 +82,53 @@ def test_release_evidence_rejects_tampering(tmp_path: Path) -> None:
 
     assert result.returncode != 0
     assert "hash differs" in result.stderr
+
+
+def test_checked_in_evidence_manifests_are_internally_consistent() -> None:
+    """Stored-evidence integrity over every checked-in release manifest.
+
+    The evidence file is the integrity record for the RELEASED artifacts:
+    its artifact digests are what the released files (wheel, sdist, SPDX
+    SBOM) must match — verified against the release at the release
+    ceremony and re-verifiable offline with scripts/verify_release_evidence.py
+    pointed at the released files. CI does NOT re-derive the bytes:
+    regenerating the SBOM or the distributions and comparing them
+    byte-for-byte against this record is reproduction, which is
+    `jumbo build --pinned`'s job (the JumboIndex record carries the
+    artifact sha256 of record), not CI's.
+    """
+    from datetime import UTC, datetime
+    from pathlib import Path
+
+    evidence_dir = Path(__file__).parents[2] / "evidence"
+    # The released lineages v1.0.0..v1.1.2; the *-resolution files are
+    # resolution captures, not release manifests.
+    manifests = sorted(
+        path
+        for path in evidence_dir.glob("v*.json")
+        if "-resolution" not in path.stem
+    )
+    assert len(manifests) >= 7, "expected the v1.0.0..v1.1.2 release lineages"
+
+    for manifest in manifests:
+        if "-resolution" in manifest.stem:
+            continue
+        evidence = json.loads(manifest.read_text(encoding="utf-8"))
+        epoch = evidence["sourceDateEpoch"]
+        expected_at = datetime.fromtimestamp(epoch, UTC).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+        assert evidence["generatedAt"] == expected_at, manifest.name
+        artifacts = evidence["artifacts"]
+        assert isinstance(artifacts, dict) and artifacts, manifest.name
+        spdx = [name for name in artifacts if name.endswith(".spdx.json")]
+        wheels = [name for name in artifacts if name.endswith(".whl")]
+        sdists = [name for name in artifacts if name.endswith(".tar.gz")]
+        assert len(spdx) == 1, f"{manifest.name}: exactly one SPDX SBOM"
+        assert len(wheels) == 1, f"{manifest.name}: exactly one wheel"
+        assert len(sdists) == 1, f"{manifest.name}: exactly one sdist"
+        for name, digest in artifacts.items():
+            assert name == Path(name).name, f"{manifest.name}: unsafe name {name!r}"
+            assert digest.startswith("sha256:") and len(digest) == 71, (
+                f"{manifest.name}: malformed digest for {name}"
+            )
